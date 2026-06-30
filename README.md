@@ -139,15 +139,17 @@ Issue 表单参考 [VoiceHub ISSUE_TEMPLATE](https://github.com/laoshuikaixue/Vo
 ### 一次性配置
 
 1. **飞书群机器人**：群设置 → 群机器人 → 自定义机器人 → 复制 Webhook URL
+   - 若启用了「签名校验」，复制签名密钥
    - 若启用了「自定义关键词」，记下关键词（如 `GitHub`）
 2. **GitHub Secrets**（仓库 Settings → Secrets and variables → Actions）：
 
 | Secret | 必填 | 说明 |
 | --- | --- | --- |
 | `FEISHU_WEBHOOK_URL` | 是 | 飞书机器人 Webhook |
-| `FEISHU_MESSAGE_TITLE` | 否 | 消息首行；机器人有关键词验证时，此处需包含该关键词（如 `【GitHub 推送】tomako-dev-skills`） |
+| `FEISHU_WEBHOOK_SECRET` | 否 | 飞书机器人签名密钥；机器人开启「签名校验」时必填 |
+| `FEISHU_MESSAGE_TITLE` | 否 | 消息首行；可自定义标题。只有机器人开启关键词验证时，标题才必须包含关键词 |
 
-3. 合并 workflow 后 push 到 `main` 即可生效；未配置 `FEISHU_WEBHOOK_URL` 时 workflow 会跳过发送（不报错）。
+3. 合并 workflow 后 push 到 `main` 即可生效；未配置 `FEISHU_WEBHOOK_URL` 时 workflow 会跳过发送（不报错）。飞书接口返回业务错误时，workflow 会失败并打印响应 body。
 
 ## 相关文档
 

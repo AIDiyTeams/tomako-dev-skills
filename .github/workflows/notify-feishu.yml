@@ -24,6 +24,7 @@ jobs:
       - name: Send notification to Feishu
         env:
           FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
+          FEISHU_WEBHOOK_SECRET: ${{ secrets.FEISHU_WEBHOOK_SECRET }}
           EVENT_NAME: ${{ github.event_name }}
           EVENT_ACTION: ${{ github.event.action }}
           REPOSITORY: ${{ github.repository }}
@@ -138,20 +139,36 @@ jobs:
             MESSAGE_CONTENT="$MESSAGE_CONTENT${NEWLINE}$DETAIL_CONTENT"
           fi
 
-          ESCAPED_CONTENT=$(printf '%s' "$MESSAGE_CONTENT" | sed 's/"/\\"/g' | tr '\n' '|')
+          ESCAPED_CONTENT=$(printf '%s' "$MESSAGE_CONTENT" | sed 's/\\/\\\\/g; s/"/\\"/g' | tr '\n' '|')
           ESCAPED_CONTENT=${ESCAPED_CONTENT//|/\\n}
           PAYLOAD="{\"msg_type\":\"text\",\"content\":{\"text\":\"${ESCAPED_CONTENT}\"}}"
+
+          if [ -n "${FEISHU_WEBHOOK_SECRET:-}" ]; then
+            TIMESTAMP="$(date +%s)"
+            SIGN="$(printf '%s\n%s' "$TIMESTAMP" "$FEISHU_WEBHOOK_SECRET" \
+              | openssl dgst -sha256 -hmac "" -binary \
+              | base64)"
+            PAYLOAD="{\"timestamp\":\"${TIMESTAMP}\",\"sign\":\"${SIGN}\",\"msg_type\":\"text\",\"content\":{\"text\":\"${ESCAPED_CONTENT}\"}}"
+          fi
 
           HTTP_CODE=$(curl -sS -o /tmp/feishu-response.txt -w "%{http_code}" \
             -X POST -H "Content-Type: application/json" \
             -d "$PAYLOAD" \
             "$FEISHU_WEBHOOK_URL")
 
+          echo "飞书响应 (HTTP ${HTTP_CODE}):"
+          cat /tmp/feishu-response.txt
+          echo
+
           if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
-            echo "飞书通知已发送 (HTTP ${HTTP_CODE})"
+            if grep -Eq '"code"[[:space:]]*:[[:space:]]*0|"StatusCode"[[:space:]]*:[[:space:]]*0' /tmp/feishu-response.txt; then
+              echo "飞书通知已发送"
+            else
+              echo "飞书通知接口返回非成功业务状态"
+              exit 1
+            fi
           else
             echo "飞书通知失败 (HTTP ${HTTP_CODE})"
-            cat /tmp/feishu-response.txt
             exit 1
           fi
         shell: bash
