@@ -10,8 +10,9 @@ Tomako 团队工程协作 Skills 与部署脚本。独立仓库：`AIDiyTeams/to
 | deploy-frontend | `$deploy-frontend` | 本地直部署 frontend → 168 生产 |
 | pull-all | `$pull-all` | 拉取 workspace 内全部 Tomako 相关仓库最新代码 |
 | push-all | `$push-all` / `$提交` | 提交并推送各仓库本地改动 |
+| deploy-skills-ol | `$deploy-skills-ol` / `$部署skills` | Skills-OL → 124 cc-connect |
 
-Phase 2 计划：`deploy-backend`、`deploy-skills-ol`、`dev-skills-ol`
+Phase 2 计划：`deploy-backend`、`dev-skills-ol`
 
 ## 快速开始
 
@@ -27,6 +28,9 @@ export TOMAKO_SSH_KEY=~/.ssh/github_deploy_key
 
 # 4. 部署前端（同步 + preflight + 远程 build）
 ./tomako-dev-skills/scripts/deploy-frontend-local.sh full
+
+# 5. 部署 Skills-OL 到 cc-connect（需先 push Skills-OL）
+./tomako-dev-skills/scripts/deploy-skills-ol.sh full
 ```
 
 ## 目录结构
@@ -74,12 +78,10 @@ git clone git@github.com:AIDiyTeams/tomako-dev-skills.git
 ./tomako-dev-skills/install.sh
 ```
 
-安装成功后会看到类似输出：
+安装成功后会显示可用触发词列表；失败时汇总错误/警告。详细日志可加 `INSTALL_VERBOSE=1`：
 
-```text
-linked .cursor/skills/programmatic-seo
-linked .claude/skills/deploy-frontend
-完成
+```bash
+INSTALL_VERBOSE=1 ./tomako-dev-skills/install.sh
 ```
 
 重新打开 AI 助手后，可直接输入例如：

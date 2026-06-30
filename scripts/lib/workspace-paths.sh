@@ -24,6 +24,29 @@ tomako_dev_skills_resolve_paths() {
   LOCAL_SKILLS_OL_DIR="${LOCAL_SKILLS_OL_DIR:-${WORKSPACE_ROOT}/Skills-OL}"
   REMOTE_FRONTEND_DIR="${REMOTE_FRONTEND_DIR:-/opt/cibos/foldos}"
   REMOTE_PROJECT_DIR="${REMOTE_PROJECT_DIR:-/opt/cibos}"
+
+  SKILLS_OL_HOST="${SKILLS_OL_HOST:-8.210.246.124}"
+  SKILLS_OL_USER="${SKILLS_OL_USER:-root}"
+  SKILLS_OL_PORT="${SKILLS_OL_PORT:-22}"
+  SKILLS_OL_GIT_USER="${SKILLS_OL_GIT_USER:-ubuntu}"
+  REMOTE_SKILLS_OL_DIR="${REMOTE_SKILLS_OL_DIR:-/home/ubuntu/Skills-OL}"
+  CC_CONNECT_SERVICE="${CC_CONNECT_SERVICE:-cc-connect}"
+  SKILLS_OL_GIT_BRANCH="${SKILLS_OL_GIT_BRANCH:-main}"
+}
+
+tomako_dev_skills_require_skills_ol() {
+  tomako_dev_skills_resolve_paths "$@"
+
+  if [ ! -d "${LOCAL_SKILLS_OL_DIR}" ]; then
+    echo "[ERROR] 缺少 Skills-OL 目录: ${LOCAL_SKILLS_OL_DIR}" >&2
+    echo "[ERROR] 请设置 LOCAL_SKILLS_OL_DIR。" >&2
+    return 1
+  fi
+
+  if [ ! -d "${LOCAL_SKILLS_OL_DIR}/.git" ]; then
+    echo "[ERROR] Skills-OL 不是 git 仓库: ${LOCAL_SKILLS_OL_DIR}" >&2
+    return 1
+  fi
 }
 
 tomako_dev_skills_require_workspace() {

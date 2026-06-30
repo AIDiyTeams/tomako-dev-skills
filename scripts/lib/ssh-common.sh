@@ -47,3 +47,28 @@ tomako_dev_skills_remote_shell() {
   shift
   tomako_dev_skills_ssh_cmd "${ssh_key}" "set -euo pipefail; $*"
 }
+
+tomako_dev_skills_ssh_cmd_target() {
+  local ssh_key="${1:?ssh_key required}"
+  local user="${2:?user required}"
+  local host="${3:?host required}"
+  local port="${4:-22}"
+  shift 4
+
+  ssh -i "${ssh_key}" \
+    -p "${port}" \
+    -o BatchMode=yes \
+    -o ConnectTimeout=20 \
+    -o StrictHostKeyChecking=accept-new \
+    -o IdentitiesOnly=yes \
+    "${user}@${host}" "$@"
+}
+
+tomako_dev_skills_remote_shell_target() {
+  local ssh_key="${1:?ssh_key required}"
+  local user="${2:?user required}"
+  local host="${3:?host required}"
+  local port="${4:-22}"
+  shift 4
+  tomako_dev_skills_ssh_cmd_target "${ssh_key}" "${user}" "${host}" "${port}" "set -euo pipefail; $*"
+}

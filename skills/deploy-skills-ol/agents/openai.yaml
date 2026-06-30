@@ -1,0 +1,4 @@
+interface:
+  display_name: "部署 Skills-OL Skill"
+  short_description: "将 Skills-OL 部署到 cc-connect 服务器（$deploy-skills-ol / $部署skills）"
+  default_prompt: "请使用 deploy-skills-ol：确认 Skills-OL 已 push 后，在 tomako-workspace 根目录执行 ./tomako-dev-skills/scripts/deploy-skills-ol.sh full。"

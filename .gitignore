@@ -5,3 +5,6 @@ skills/.DS_Store
 .claude/
 .codex/
 .cursor/
+
+# deploy-skills-ol 最近一次部署结果
+.cache/
