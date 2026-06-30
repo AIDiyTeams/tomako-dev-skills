@@ -1,6 +1,6 @@
 # tomako-dev-skills
 
-Tomako 团队工程协作 Skills 与部署脚本。独立仓库：`AIDiyTeams/tomako-dev-skills`，以 `git clone` 或 submodule 挂载到工作区根目录（与 `Tomako/`、`Tomako-portal/` 并列，根目录名称自定）。
+Tomako 团队工程协作 Skills 与部署脚本。独立仓库：`AIDiyTeams/tomako-dev-skills`，以 `git clone` 或 submodule 挂载到你平时打开 AI 助手的目录下；安装脚本不强制同级项目名称。
 
 ## 包含的 Skills（Phase 1）
 
@@ -14,7 +14,7 @@ Phase 2 计划：`deploy-backend`、`deploy-skills-ol`、`dev-skills-ol`
 ## 快速开始
 
 ```bash
-# 1. 在工作区根目录安装 skill 链接（根目录名称自定，需含 Tomako/、Tomako-portal/、tomako-dev-skills/）
+# 1. 安装 skill 链接（默认链接到 tomako-dev-skills 的父目录）
 ./tomako-dev-skills/install.sh
 
 # 2. 配置团队 SSH 密钥（shell profile 或当前终端）
@@ -47,12 +47,12 @@ tomako-dev-skills/
 
 ### 准备条件
 
-工作区根目录名称自定，需是你平时打开 AI 助手的那个 multi-repo 目录，例如：
+工作区根目录名称自定，通常是你平时打开 AI 助手的那个 multi-repo 目录。安装本身不要求同时存在前端、后端和 Skills-OL；相关脚本需要项目代码时，可用环境变量指定路径。
 
 ```text
 你的工作目录/          # 名称随意
-  Tomako/
-  Tomako-portal/
+  Tomako/             # 前端，默认路径；不同名称可设 LOCAL_FRONTEND_DIR
+  Tomako-portal/      # 后端，或 cibos-portal/；需要时可设 LOCAL_BACKEND_DIR
   Skills-OL/           # 常见，非必需
   tomako-dev-skills/   # clone 后出现
 ```

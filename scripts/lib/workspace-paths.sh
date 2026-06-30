@@ -1,5 +1,6 @@
 # shellcheck shell=bash
-# 解析工作区根目录内各子项目路径（根目录名称自定，需含 Tomako/、Tomako-portal/、tomako-dev-skills/）。
+# 解析 tomako-dev-skills 父目录内各子项目路径。
+# 父目录名称和同级项目结构自定；具体脚本只校验自己实际需要的目录。
 
 tomako_dev_skills_resolve_paths() {
   local scripts_dir="${1:?scripts_dir required}"
@@ -9,7 +10,17 @@ tomako_dev_skills_resolve_paths() {
   WORKSPACE_ROOT="$(cd "${DEV_SKILLS_DIR}/.." && pwd)"
 
   LOCAL_FRONTEND_DIR="${LOCAL_FRONTEND_DIR:-${WORKSPACE_ROOT}/Tomako}"
-  LOCAL_BACKEND_DIR="${LOCAL_BACKEND_DIR:-${WORKSPACE_ROOT}/Tomako-portal}"
+
+  if [ -z "${LOCAL_BACKEND_DIR:-}" ]; then
+    if [ -d "${WORKSPACE_ROOT}/Tomako-portal" ]; then
+      LOCAL_BACKEND_DIR="${WORKSPACE_ROOT}/Tomako-portal"
+    elif [ -d "${WORKSPACE_ROOT}/cibos-portal" ]; then
+      LOCAL_BACKEND_DIR="${WORKSPACE_ROOT}/cibos-portal"
+    else
+      LOCAL_BACKEND_DIR="${WORKSPACE_ROOT}/Tomako-portal"
+    fi
+  fi
+
   LOCAL_SKILLS_OL_DIR="${LOCAL_SKILLS_OL_DIR:-${WORKSPACE_ROOT}/Skills-OL}"
   REMOTE_FRONTEND_DIR="${REMOTE_FRONTEND_DIR:-/opt/cibos/foldos}"
   REMOTE_PROJECT_DIR="${REMOTE_PROJECT_DIR:-/opt/cibos}"
@@ -18,17 +29,18 @@ tomako_dev_skills_resolve_paths() {
 tomako_dev_skills_require_workspace() {
   tomako_dev_skills_resolve_paths "$@"
 
-  local missing=0
-  for dir in "${LOCAL_FRONTEND_DIR}" "${LOCAL_BACKEND_DIR}" "${LOCAL_SKILLS_OL_DIR}"; do
-    if [ ! -d "${dir}" ]; then
-      echo "[ERROR] 缺少 workspace 子目录: ${dir}" >&2
-      missing=1
-    fi
-  done
-
-  if [ "${missing}" -ne 0 ]; then
-    echo "[ERROR] 请在含 Tomako/、Tomako-portal/、Skills-OL/ 的工作区根目录下使用，或设置 LOCAL_*_DIR 环境变量。" >&2
+  if [ ! -d "${LOCAL_FRONTEND_DIR}" ]; then
+    echo "[ERROR] 缺少前端目录: ${LOCAL_FRONTEND_DIR}" >&2
+    echo "[ERROR] 请设置 LOCAL_FRONTEND_DIR 指向 Tomako 前端目录。" >&2
     return 1
+  fi
+
+  if [ ! -d "${LOCAL_BACKEND_DIR}" ]; then
+    echo "[WARN] 未检测到后端目录: ${LOCAL_BACKEND_DIR}。当前前端部署流程会继续。" >&2
+  fi
+
+  if [ ! -d "${LOCAL_SKILLS_OL_DIR}" ]; then
+    echo "[WARN] 未检测到 Skills-OL 目录: ${LOCAL_SKILLS_OL_DIR}。当前前端部署流程会继续。" >&2
   fi
 }
 
