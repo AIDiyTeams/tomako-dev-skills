@@ -1,0 +1,62 @@
+name: 🔒 安全问题报告
+description: 报告脚本、Workflow 或文档中的安全风险（勿公开粘贴密钥）
+title: '[Security]: '
+labels: ['security']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ⚠️ **请勿在 Issue 中粘贴** `FEISHU_WEBHOOK_URL`、`TOMAKO_SSH_KEY`、私钥或 token 原文。
+        严重漏洞请使用 GitHub Security Advisories 或私下联系维护者。
+
+  - type: dropdown
+    id: security-type
+    attributes:
+      label: 安全问题类型
+      options:
+        - 密钥 / Secret 泄露风险
+        - 部署脚本权限或命令注入
+        - GitHub Actions Workflow 安全
+        - SSH / 远程执行风险
+        - 依赖或供应链
+        - 其他
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 严重程度
+      options:
+        - 严重
+        - 高
+        - 中
+        - 低
+    validations:
+      required: true
+
+  - type: textarea
+    id: security-summary
+    attributes:
+      label: 安全问题概述
+      description: 简要说明，避免完整攻击步骤
+    validations:
+      required: true
+
+  - type: textarea
+    id: affected-components
+    attributes:
+      label: 受影响的组件
+      placeholder: 例如 scripts/deploy-frontend-local.sh、.github/workflows/…
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: security-terms
+    attributes:
+      label: 确认事项
+      options:
+        - label: 我未在公开内容中包含真实密钥或 Webhook
+          required: true
+        - label: 我愿意配合验证与修复
+          required: true

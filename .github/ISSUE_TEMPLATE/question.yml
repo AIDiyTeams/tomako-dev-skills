@@ -1,0 +1,66 @@
+name: ❓ 提问
+description: 关于 Skills 安装、触发词或 tomako-workspace 使用方式的提问
+title: '[Question]: '
+labels: ['question', '需要帮助']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        提问前建议先看 [AGENTS.md](https://github.com/AIDiyTeams/tomako-dev-skills/blob/main/AGENTS.md) 与 [README](https://github.com/AIDiyTeams/tomako-dev-skills#readme)。
+
+  - type: dropdown
+    id: question-type
+    attributes:
+      label: 问题类型
+      options:
+        - Skills 安装 / install.sh
+        - $ 菜单找不到触发词
+        - pull-all / push-all 多仓库
+        - deploy-frontend 部署
+        - tomako-workspace 目录结构
+        - 飞书通知配置
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: question-description
+    attributes:
+      label: 问题描述
+      placeholder: 你想做什么？卡在哪一步？
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: 环境信息
+      placeholder: '打开的 Cursor 目录路径、操作系统'
+    validations:
+      required: false
+
+  - type: textarea
+    id: attempted-solutions
+    attributes:
+      label: 已尝试的方法
+    validations:
+      required: false
+
+  - type: dropdown
+    id: urgency
+    attributes:
+      label: 紧急程度
+      options:
+        - 低 - 不着急
+        - 中 - 影响部分工作
+        - 高 - 阻塞当前任务
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: 确认事项
+      options:
+        - label: 我已搜索现有 Issues
+          required: true

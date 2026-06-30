@@ -1,0 +1,75 @@
+name: ✨ 功能建议
+description: 为 tomako-dev-skills 提出新 Skill、脚本或协作流程改进
+title: '[Feature]: '
+labels: ['enhancement', '功能建议']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢提出想法！字段「功能类别 / 功能概述 / 优先级」与飞书 Issue 通知格式对齐（见 [action-feishu](https://github.com/Lirzh/action-feishu)）。
+
+  - type: dropdown
+    id: feature-category
+    attributes:
+      label: 功能类别
+      options:
+        - 新 Skill / 触发词
+        - pull-all / push-all 多仓库协作
+        - deploy-frontend 部署流程
+        - programmatic-seo 工程协作
+        - install.sh / 跨平台 skills 安装
+        - 飞书 / GitHub Actions 集成
+        - 文档与 onboarding
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature-summary
+    attributes:
+      label: 功能概述
+      placeholder: 用一两句话概括建议…
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: 问题描述
+      description: 当前流程哪里不便？
+    validations:
+      required: false
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: 建议方案
+      placeholder: 期望的 Skill 行为、脚本接口、触发词等
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 优先级
+      options:
+        - 高 - 阻塞团队日常协作
+        - 中 - 明显提升效率
+        - 低 - 有了更好
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 附加信息
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: 确认事项
+      options:
+        - label: 我已搜索现有 Issues，确认不是重复建议
+          required: true

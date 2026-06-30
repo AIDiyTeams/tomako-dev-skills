@@ -38,7 +38,10 @@ tomako-dev-skills/
 │   └── lib/                 # workspace 路径、SSH 公共逻辑
 ├── config/                  # 默认环境变量（不含密钥）
 ├── install.sh               # symlink 安装器
-└── AGENTS.md                # Agent 入口说明
+├── AGENTS.md                # Agent 入口说明
+└── .github/
+    ├── ISSUE_TEMPLATE/      # Issue 表单（参考 VoiceHub）
+    └── workflows/           # 飞书通知等 CI
 ```
 
 ## 与 Tomako 营销 Skills 的关系
@@ -115,6 +118,34 @@ export TOMAKO_SSH_KEY=~/.ssh/your_key
 ```
 
 部署脚本需用 SSH 私钥登录服务器；`$programmatic-seo` 等产品/运营向能力无需设置。
+
+## 飞书推送通知（GitHub Actions）
+
+`main` 分支 **push** 与下表事件会触发飞书通知，逻辑对齐 [action-feishu](https://github.com/Lirzh/action-feishu)。Workflow：`.github/workflows/notify-feishu.yml`。
+
+| 事件 | 触发时机 |
+| --- | --- |
+| `push` | 推送到 `main` |
+| `pull_request` | PR 新建 / 关闭 / 重开（含是否已合并） |
+| `pull_request_review` | 提交 PR 评审（通过 / 需修改 / 评论） |
+| `issues` | Issue 新建 / 关闭 / 重开 |
+| `release` | Release 发布 / 删除 |
+| `discussion` | Discussion 新建 / 关闭 / 重开（需仓库开启 Discussions） |
+
+Issue 表单参考 [VoiceHub ISSUE_TEMPLATE](https://github.com/laoshuikaixue/VoiceHub/tree/main/.github/ISSUE_TEMPLATE)；**功能建议**中的「功能类别 / 功能概述 / 优先级」会在飞书里结构化展示。
+
+### 一次性配置
+
+1. **飞书群机器人**：群设置 → 群机器人 → 自定义机器人 → 复制 Webhook URL
+   - 若启用了「自定义关键词」，记下关键词（如 `GitHub`）
+2. **GitHub Secrets**（仓库 Settings → Secrets and variables → Actions）：
+
+| Secret | 必填 | 说明 |
+| --- | --- | --- |
+| `FEISHU_WEBHOOK_URL` | 是 | 飞书机器人 Webhook |
+| `FEISHU_MESSAGE_TITLE` | 否 | 消息首行；机器人有关键词验证时，此处需包含该关键词（如 `【GitHub 推送】tomako-dev-skills`） |
+
+3. 合并 workflow 后 push 到 `main` 即可生效；未配置 `FEISHU_WEBHOOK_URL` 时 workflow 会跳过发送（不报错）。
 
 ## 相关文档
 

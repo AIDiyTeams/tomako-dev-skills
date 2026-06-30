@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📖 Agent 触发词与 Skills 说明
+    url: https://github.com/AIDiyTeams/tomako-dev-skills/blob/main/AGENTS.md
+    about: 查看 $pull-all、$push-all、$deploy-frontend 等触发词与使用约定
+  - name: 📚 README 与安装
+    url: https://github.com/AIDiyTeams/tomako-dev-skills#readme
+    about: install.sh、tomako-workspace 目录结构与飞书通知配置
+  - name: 🔒 安全问题报告
+    url: https://github.com/AIDiyTeams/tomako-dev-skills/issues/new?template=security_report.yml
+    about: 使用安全问题模板；严重漏洞请私下联系维护者，勿在 Issue 中粘贴密钥或 Webhook

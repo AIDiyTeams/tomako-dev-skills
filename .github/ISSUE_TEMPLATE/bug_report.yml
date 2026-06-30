@@ -1,0 +1,94 @@
+name: 🐛 问题反馈
+description: 报告 tomako-dev-skills 中的 Skill、脚本或安装问题
+title: '[Bug]: '
+labels: ['bug', '需要确认']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请描述遇到的问题。涉及 **密钥、Webhook、SSH 私钥** 的内容请勿贴在 Issue 中。
+
+  - type: dropdown
+    id: bug-type
+    attributes:
+      label: 问题类型
+      description: 请选择最符合的问题范围
+      options:
+        - Skill 行为（$pull-all / $push-all / $deploy-frontend / $pseo 等）
+        - 脚本错误（scripts/*.sh）
+        - install.sh / skills 链接安装
+        - tomako-workspace 路径解析
+        - 飞书 GitHub Actions 通知
+        - 文档 / AGENTS.md
+        - 其他
+    validations:
+      required: true
+
+  - type: input
+    id: trigger-word
+    attributes:
+      label: 相关触发词（如有）
+      description: 例如 $提交、$pull-all、$deploy-frontend
+      placeholder: $push-all
+    validations:
+      required: false
+
+  - type: textarea
+    id: bug-description
+    attributes:
+      label: 问题描述
+      description: 请清楚描述现象与影响
+      placeholder: 执行了什么命令 / 说了什么触发词，实际发生了什么…
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: 复现步骤
+      placeholder: |
+        1. 在 tomako-workspace 根目录…
+        2. 运行 ./tomako-dev-skills/scripts/…
+        3. 看到…
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: 期望行为
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: 实际行为
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: 环境信息
+      placeholder: 'macOS / Linux，Cursor 版本，是否在 tomako-workspace 根目录打开'
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 附加信息
+      description: 终端输出、截图路径等（勿含密钥）
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: 确认事项
+      options:
+        - label: 我已搜索现有 Issues，确认不是重复问题
+          required: true
+        - label: 我已阅读 AGENTS.md 中的工作区约定
+          required: false
