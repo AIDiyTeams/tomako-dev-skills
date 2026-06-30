@@ -5,7 +5,7 @@ description: Deploy Tomako frontend from local multi-repo workspace to productio
 
 # Tomako 前端本地直部署 Skill
 
-本 Skill 位于 `tomako-dev-skills/skills/deploy-frontend/`，在**工作区根目录**（含 `Tomako/`、`Tomako-portal/`、`tomako-dev-skills/`，名称自定）生效。
+本 Skill 位于 `tomako-dev-skills/skills/deploy-frontend/`，默认以本仓库父目录作为工作区；本地目录名不同或不在同一层时，用 `LOCAL_FRONTEND_DIR` 指向前端代码。
 
 触发词：`$deploy-frontend`、本地部署前端、未提交代码部署、热修复前端。
 
