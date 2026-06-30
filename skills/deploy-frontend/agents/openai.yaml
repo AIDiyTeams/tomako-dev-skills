@@ -1,0 +1,4 @@
+interface:
+  display_name: "部署前端 Skill"
+  short_description: "本地未提交代码直部署 Tomako 前端到生产（$deploy-frontend / $部署前端）"
+  default_prompt: "请使用 deploy-frontend：在 tomako-workspace 根目录执行 ./tomako-dev-skills/scripts/deploy-frontend-local.sh full。"

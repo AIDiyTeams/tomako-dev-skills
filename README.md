@@ -8,6 +8,8 @@ Tomako 团队工程协作 Skills 与部署脚本。独立仓库：`AIDiyTeams/to
 | --- | --- | --- |
 | programmatic-seo | `$programmatic-seo` / `$pseo` | Tool/SEO 页全链路开发与验收 |
 | deploy-frontend | `$deploy-frontend` | 本地直部署 frontend → 168 生产 |
+| pull-all | `$pull-all` | 拉取 workspace 内全部 Tomako 相关仓库最新代码 |
+| push-all | `$push-all` / `$提交` | 提交并推送各仓库本地改动 |
 
 Phase 2 计划：`deploy-backend`、`deploy-skills-ol`、`dev-skills-ol`
 
@@ -20,7 +22,10 @@ Phase 2 计划：`deploy-backend`、`deploy-skills-ol`、`dev-skills-ol`
 # 2. 配置团队 SSH 密钥（shell profile 或当前终端）
 export TOMAKO_SSH_KEY=~/.ssh/github_deploy_key
 
-# 3. 部署前端（同步 + preflight + 远程 build）
+# 3. 日常同步代码
+./tomako-dev-skills/scripts/pull-all.sh pull
+
+# 4. 部署前端（同步 + preflight + 远程 build）
 ./tomako-dev-skills/scripts/deploy-frontend-local.sh full
 ```
 
@@ -47,14 +52,15 @@ tomako-dev-skills/
 
 ### 准备条件
 
-工作区根目录名称自定，通常是你平时打开 AI 助手的那个 multi-repo 目录。安装本身不要求同时存在前端、后端和 Skills-OL；相关脚本需要项目代码时，可用环境变量指定路径。
+工作区根目录名称自定，团队标准为 **`tomako-workspace`**。安装本身不要求同时存在前端、后端和 Skills-OL；相关脚本需要项目代码时，可用环境变量指定路径。
 
 ```text
-你的工作目录/          # 名称随意
-  Tomako/             # 前端，默认路径；不同名称可设 LOCAL_FRONTEND_DIR
-  Tomako-portal/      # 后端，或 cibos-portal/；需要时可设 LOCAL_BACKEND_DIR
-  Skills-OL/           # 常见，非必需
-  tomako-dev-skills/   # clone 后出现
+tomako-workspace/        # 在此打开 Cursor，脚本从此根目录执行
+  Tomako/                # 前端，默认路径；不同名称可设 LOCAL_FRONTEND_DIR
+  Tomako-portal/         # 后端，或 cibos-portal/
+  Skills-OL/
+  tomako-dev-skills/     # clone 后出现
+  Tomako2/               # 可选；--repo Tomako2 或 EXTRA_GIT_REPOS
 ```
 
 ### 首次安装

@@ -1,11 +1,11 @@
 # shellcheck shell=bash
-# 解析 tomako-dev-skills 父目录内各子项目路径。
-# 父目录名称和同级项目结构自定；具体脚本只校验自己实际需要的目录。
+# 解析 tomako-workspace（tomako-dev-skills 的父目录）内各子项目路径。
+# 团队在 tomako-workspace 根目录打开 Cursor；pull/push/deploy 脚本均在此根目录下调用。
 
 tomako_dev_skills_resolve_paths() {
   local scripts_dir="${1:?scripts_dir required}"
 
-  # scripts_dir = tomako-dev-skills/scripts
+  # scripts_dir = tomako-workspace/tomako-dev-skills/scripts
   DEV_SKILLS_DIR="$(cd "${scripts_dir}/.." && pwd)"
   WORKSPACE_ROOT="$(cd "${DEV_SKILLS_DIR}/.." && pwd)"
 

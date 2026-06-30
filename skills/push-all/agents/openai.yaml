@@ -1,0 +1,4 @@
+interface:
+  display_name: "提交推送 Skill"
+  short_description: "提交并推送 tomako-workspace 内各 git 仓库（$push-all / $提交）"
+  default_prompt: "请使用 push-all：在 tomako-workspace 根目录先执行 ./tomako-dev-skills/scripts/push-all.sh status，分析 diff 后 ./tomako-dev-skills/scripts/push-all.sh push -m \"提交说明\"。"

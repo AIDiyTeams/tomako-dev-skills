@@ -1,0 +1,4 @@
+interface:
+  display_name: "拉取代码 Skill"
+  short_description: "拉取 tomako-workspace 内各 git 仓库最新代码（$pull-all / $拉取）"
+  default_prompt: "请使用 pull-all：在 tomako-workspace 根目录执行 ./tomako-dev-skills/scripts/pull-all.sh status，再 ./tomako-dev-skills/scripts/pull-all.sh pull。"
