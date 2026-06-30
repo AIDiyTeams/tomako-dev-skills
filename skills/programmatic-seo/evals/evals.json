@@ -1,0 +1,274 @@
+{
+  "skill_name": "programmatic-seo",
+  "note": "Evals target Tomako-specific constraints that the production goal depends on: reading-state protocol, page brief, runtime path, ToolSpec/registry/i18n wiring, UI Gate, Asset Gate, Content Gate, Launch Gate, agent result-source-of-truth, async tolerance, high-risk handling, slug/route, SEO/sitemap, and proxy diagnosis. External pSEO playbooks are advisory only and must not override Tomako Gate files.",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Let's build a new tool page: a website SEO analyzer. The user pastes their site URL and gets an SEO report. Just implement it.",
+      "expected_output": "Should NOT immediately code a frontend-only widget. Should establish the reading-state table, read p0-page-brief.md first, and ask the smallest blocking questions (input source, output contract, runtime ability, risk boundary). Should classify runtime as online LLM task + Skills-OL because it requires URL crawling/analysis/generation, not deterministic browser logic. Should specify the runtime path (POST /llm/tasks -> cc-connect -> Skills-OL script -> POST /api/skill-results -> SSE -> render) and that final result renders only from GET /api/skill-results/{taskId}. Should still cover ToolSpec + registry + i18n + first-pass image asset + SEO-first structure.",
+      "assertions": [
+        "Does not default to a frontend-only/mock implementation",
+        "Establishes reading-state table and uses p0-page-brief.md before implementing",
+        "Asks targeted requirement-discovery questions or records explicit assumptions",
+        "Classifies runtime as online LLM task + Skills-OL with a clear reason (URL crawl/analysis)",
+        "Describes the LLM-task + skill-result writeback path",
+        "States final result source is structured /api/skill-results only",
+        "Still requires ToolSpec + registry + i18n wiring and first-pass image asset"
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Make a UTM link builder tool page.",
+      "expected_output": "Should classify this as legitimately frontend-only/deterministic (string assembly, no crawl/LLM), which is the exception case. Should still require the full Tomako module: spec.ts + container.tsx + widget + registry.ts registration + widget registry + i18n messages exported from both tools/index.ts. Should require a first-pass bitmap asset under public/tools/utm-link-builder-*.png (or a recorded live-workspace exception) and image validation. Should keep H1/metadata/intro/widget aligned and follow p0-ui-gates.md, p0-asset-gates.md, and p0-content-gates.md.",
+      "assertions": [
+        "Classifies as frontend-only/deterministic correctly",
+        "Still requires spec + container + widget + registry + widget-registry wiring",
+        "Requires i18n messages exported from both locale tools/index.ts",
+        "Requires first-pass image asset or recorded exception and image validation",
+        "Does not skip SEO-first structure or UI/Asset/Content Gates just because the tool is simple"
+      ],
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I finished the spec.ts, container.tsx and widget for the new tool and registered it. Ship it as published.",
+      "expected_output": "Should refuse to treat first implementation as done without checking the image gate: a serious public page needs at least one real public/tools/{slug}-*.png rendered with next/image + localized alt + stable dimensions, or a recorded live-workspace exception. Should not count ToolGuideVisual, code panels, gradients, or placeholder prompts as the generated image. Should run pnpm tools:check-images, and verify sitemap inclusion + metadata alignment + slug/route before flipping status to published. Should also confirm capability is real (not mock) before publishing.",
+      "assertions": [
+        "Flags missing first-pass bitmap asset as a blocker (or requires recorded exception)",
+        "Rejects ToolGuideVisual/code panel/placeholder as satisfying the image gate",
+        "Runs or requires pnpm tools:check-images",
+        "Verifies sitemap inclusion and metadata/slug before publishing",
+        "Refuses to publish while core capability is unverified or mock/misleading"
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Build a privacy policy generator tool. To keep it simple and fast, let's just fill a template in the browser from a few form fields and show the result.",
+      "expected_output": "Should reject browser-only template stitching for a high-risk (legal/privacy/compliance) generator. Should require online Agent/LLM + Skills-OL with context capture (product/company URL, regions, data categories, processors, etc.), structured output including drafts plus missing-info questions, risk flags, and a human review checklist, plus visible disclaimers (draft, not legal advice). Should not provide a frontend local-preview/template fallback in the production flow. Final result must come from structured skill-result.",
+      "assertions": [
+        "Identifies this as high-risk (legal/privacy/compliance)",
+        "Rejects frontend-only template generation for the production flow",
+        "Requires online Agent/LLM + Skills-OL with context capture",
+        "Requires structured output with missing-info questions, risk flags, human review checklist",
+        "Requires visible disclaimers / draft positioning",
+        "Requires final result from structured /api/skill-results, not template fallback or raw llmOutput"
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Our agent-backed tool sometimes shows nothing. The frontend renders the result, but if the skill result isn't there yet it falls back to showing the raw LLM task message, and a 404 on /api/skill-results makes it show an error immediately.",
+      "expected_output": "Should identify two violations of cross-tool invariants. First: agent-backed tools must render the final user-visible result only from structured GET /api/skill-results/{taskId} with the expected resultType/schema, never from raw llmOutput / turn messages / local template fallback. Second: a temporary /skill-results 404, AWAITING_INPUT, or transient SSE error is not final failure; the UI should keep bounded polling within a grace window. Should recommend categorized failure states (submit_failed, upstream_unavailable, task_failed, result_timeout, result_schema_invalid, agent_writeback_failed) and schema validation before render.",
+      "assertions": [
+        "Flags rendering from raw llmOutput / fallback as wrong",
+        "Requires final result only from structured /api/skill-results with resultType/schema check",
+        "Explains AWAITING_INPUT / temporary 404 / transient SSE error are not final failure",
+        "Recommends bounded polling with a grace window",
+        "Recommends categorized/layered failure states instead of immediate error"
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "For the new tool's guide sections and hero, I'll just reuse ToolGuideVisual and copy the layout from product-name-generator since it already looks good.",
+      "expected_output": "Should state that p0-ui-gates.md and p0-asset-gates.md are the canonical visual standards, and that a previous container or ToolGuideVisual is not the standard when the Gates are more specific. Should require deliberate hero/workspace decisions per tool, section-prototype variety, no nested card stacks, no over-complex forms, no heavy black selected states, no excessive icons, image subject filling the asset, and mobile QA. Should require a real first-pass bitmap asset rather than ToolGuideVisual as the generated image. Should note product-name-generator is a frontend-only example, not a model for high-context tools.",
+      "assertions": [
+        "Names p0-ui-gates.md and p0-asset-gates.md as canonical visual standards over local precedent",
+        "Requires a deliberate hero decision rather than a default template",
+        "Requires section-prototype variety and no nested-card clutter",
+        "Requires a real bitmap asset, not ToolGuideVisual, for the image gate",
+        "Cautions that product-name-generator's frontend-only pattern is not the default model"
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "We want to scale to 60 tool pages fast, basically the same page with the keyword swapped for each use case.",
+      "expected_output": "Should reject pure keyword-swap / doorway pages. Should require each page to pass the standalone value test and have a distinct user job, input pattern, output, example, or decision path; shared sections allowed but the useful core must change. Should keep everything inside the Tomako ToolSpec model (spec + container + widget + registry + i18n), not new content/tools MDX and not per-tool route files. Should recommend launching in reviewable batches with manual sample inspection. May use external pSEO playbooks as advisory background only, while applying Tomako Gate files on top.",
+      "assertions": [
+        "Rejects pure keyword-swap / thin doorway pages",
+        "Requires a distinct user job / unique core per page",
+        "Keeps pages in the ToolSpec module model (no new MDX, no per-tool routes)",
+        "Recommends reviewable batches with sample inspection",
+        "Treats generic playbooks as advisory, not as the Tomako implementation"
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "The tool page is built and looks great. Is it SEO-ready to launch?",
+      "expected_output": "Should run a technical SEO sweep before claiming readiness: verify the tool URL is actually included in src/app/sitemap.ts (a known project gap to check, not assume), canonical + hreflang correct, draft/review/mock pages are noindex and excluded from sitemap and public index, H1/title/description/intro/widget all describe the same job, content is crawlable HTML (not only in images/canvas/hidden states), OG/metadata match the page, mobile has no overflow. Should not claim SEO-ready on visual polish alone.",
+      "assertions": [
+        "Verifies the tool URL is included in sitemap.ts rather than assuming",
+        "Checks canonical and hreflang correctness",
+        "Confirms draft/review/mock pages are noindex and out of sitemap/public index",
+        "Checks H1/title/description/intro/widget alignment",
+        "Checks crawlable HTML and mobile/overflow",
+        "Does not equate visual polish with SEO readiness"
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "We renamed the tool from app-name-generator to product-name-generator. Now the old URL 404s for users who saved it.",
+      "expected_output": "Should choose the slug from the URL users naturally type/share and preserve the old one via a slug alias or redirect (resolving in one hop), rather than leaving a 404 or republishing under a wrong status. Should test the exact shared detail route for /zh/tools/{slug} and /en/tools/{slug}, confirm generateStaticParams sees the slug, and note the alias in release risk notes. Should not create a per-tool route file to fix it.",
+      "assertions": [
+        "Recommends a slug alias or redirect for the old URL",
+        "Picks the slug from the natural user-facing URL",
+        "Tests the actual shared detail route for both locales",
+        "Does not create a per-tool route file or misuse status to fix routing",
+        "Records the alias/redirect in release notes"
+      ],
+      "files": []
+    },
+    {
+      "id": 10,
+      "prompt": "I'm testing locally and POST localhost:3000/api/llm/tasks returns 502. So the local backend isn't running, right?",
+      "expected_output": "Should not conclude the local backend is down. Should explain that local /api/... may proxy to production/another upstream via API_PROXY_TARGET / NEXT_PUBLIC_API_BASE_URL and src/app/api/[...path]/route.ts. Should inspect proxy env and route code, check the Network tab request URL/status, and test the direct upstream, then distinguish layers: local proxy failed pre-upstream, production/API gateway 502, backend up but cc-connect/LLM downstream unavailable, or auth/test-mode assumptions wrong. Should state which layer before diagnosing.",
+      "assertions": [
+        "Does not conclude local backend is down from a 502 alone",
+        "Explains local /api may proxy to production via API_PROXY_TARGET",
+        "Inspects proxy env, route file, and Network request URL/status",
+        "Distinguishes proxy vs gateway vs downstream vs auth layers",
+        "States the failing layer before concluding"
+      ],
+      "files": []
+    },
+    {
+      "id": 11,
+      "prompt": "Audit our existing programmatic SEO tool pages for crawl errors and pages returning 404.",
+      "expected_output": "Should recognize this is primarily a technical SEO/crawl audit rather than the programmatic-seo strategy + tool-page build flow. May reuse p0-content-gates.md and p0-launch-checklist.md, but should cross-reference a dedicated SEO audit skill for full crawlability/indexation work and focus its own contribution on Tomako specifics: sitemap inclusion, draft/review noindex correctness, slug/alias 404s, and shared-route reachability.",
+      "assertions": [
+        "Recognizes this as a technical SEO/crawl audit task",
+        "Cross-references a dedicated SEO audit skill rather than doing a full audit alone",
+        "Still applies Tomako specifics (sitemap, noindex, slug/alias, shared-route 404s)",
+        "Does not treat it as a new tool-page build request"
+      ],
+      "files": []
+    },
+    {
+      "id": 12,
+      "prompt": "An Agent-backed tool creates the LLM task and the Skills-OL script says it posted the result, but /api/skill-results/{taskId} is still empty. The script default api url is http://47.239.95.168:80 and production redirects to https://tomako.ai. Build/lint/dry-run/schema all pass.",
+      "expected_output": "Should treat this as a live writeback failure, not as UI done or schema done. Should inspect the actual Skills-OL writeback URL, protocol, redirect history, HTTP status, response body, and whether POST/body survived the redirect. Should require canonical HTTPS writeback such as https://tomako.ai or the team-approved HTTPS API domain, and reject hardcoded http IP defaults in prompts, scripts, systemd env, or examples. Should require a real live QA loop: submit -> Agent/Skills-OL writeback -> fetch /api/skill-results/{taskId} -> frontend render. Should not rely on build/lint/dry-run/schema as production runtime proof.",
+      "assertions": [
+        "Classifies the issue as live Skills-OL writeback failure",
+        "Checks protocol, redirect history, status, response body, and POST/body preservation",
+        "Requires canonical HTTPS writeback URL and rejects hardcoded http IP defaults",
+        "Requires submit -> writeback -> fetch -> render live QA",
+        "Does not treat build/lint/dry-run/schema as sufficient runtime proof"
+      ],
+      "files": []
+    },
+    {
+      "id": 13,
+      "prompt": "A Twitter GIF downloader page explains the workflow in public sections, shows a right-side 1-2-3-4 process visual built with React/CSS, and never says why users should choose Tomako over other downloaders, manual conversion, browser plugins, or scripts.",
+      "expected_output": "Should flag this as a P0 content and asset failure, not a minor polish issue. The page must answer why choose Tomako, define what makes a good Twitter/X GIF downloader, and position Tomako against those standards using concrete user outcomes such as clearer link handling, output/download clarity, failure reasons, privacy/copyright boundary, fewer steps, and result usability. It should replace process/technical 'how it works' content with value, outcome, boundary, and doubt-removal sections. It must require actual imagegen-generated bitmap assets under public/tools, not React/CSS/SVG/ToolGuideVisual substitutes, and the visual must not repeat adjacent copy as a numbered list. It should allow productized assumptions tied to real UX, but reject unsupported claims like official partnership, fastest, 100% success, certifications, real customer data, or exact performance numbers.",
+      "assertions": [
+        "Treats missing 'why choose us' as a P0 blocker",
+        "Requires a 'what makes a good X tool' standard and maps Tomako value to it",
+        "Rejects public process/technical 'how it works' as a substitute for product value",
+        "Requires imagegen-generated bitmap assets rather than React/CSS/SVG/ToolGuideVisual visuals",
+        "Rejects 1-2-3-4 process visuals that repeat nearby text",
+        "Allows productized value packaging while forbidding unsupported factual claims"
+      ],
+      "files": []
+    },
+    {
+      "id": 14,
+      "prompt": "The tool page has imagegen assets, but the images are basically UI screenshots: a white card centered on a large decorative background, many small UI cards/icons/text labels, and no scene, object, person, before/after value, or visual metaphor. The subject looks small after being placed on the page.",
+      "expected_output": "Should reject this as failing the Asset Gate even though imagegen was used. The core image must be visual expression first, not UI drawing or an information diagram. It should require the subject to fill the image without an extra background board/card/canvas, keep text to 1-3 short labels, avoid dashboard/card/icon piles, and use scenified, object-based, people-based, before/after, or value-metaphor compositions. It should make clear that page layout provides the container; the generated image should not bring its own large background or nested frame.",
+      "assertions": [
+        "Does not pass the asset just because imagegen was used",
+        "Rejects UI-screenshot/dense-dashboard/icon-pile images as core visuals",
+        "Requires the subject to fill the image without extra background/card/canvas layers",
+        "Requires visual expression with minimal text, not logic explained inside the image",
+        "Encourages scenified/object/people/before-after/value-metaphor compositions",
+        "States that page layout owns the container; the image should not carry a nested frame"
+      ],
+      "files": []
+    },
+    {
+      "id": 15,
+      "prompt": "A generated tool page puts every section inside one centered max-width container, so the hero, workspace, result area, image/text sections, FAQ, and CTA all occupy a narrow middle column while large empty space remains on both sides. The form width looks okay, but everything else is unnecessarily constrained.",
+      "expected_output": "Should flag this as a P0 UI layout failure. The page should not use a global narrow max-width wrapper for all Tool content. Only elements that need it, such as the form, long text columns, document reading panes, or FAQ text, should have local width limits. The workspace shell, right-side visual, generated result area, image/text sections, visual bands, and CTA should use the available browser width with responsive margins. The fix should remove or bypass the shared narrow container for page sections, keep form width constrained, and verify desktop and mobile layouts.",
+      "assertions": [
+        "Rejects a global narrow max-width wrapper around all sections",
+        "Allows local width limits only for form and readable text/content panes",
+        "Requires result area, visuals, image/text sections, and CTA to use available width",
+        "Distinguishes form width constraints from page-level constraints",
+        "Requires desktop and mobile verification after the layout change"
+      ],
+      "files": []
+    },
+    {
+      "id": 16,
+      "prompt": "A tool page has an H1, a working widget, a short value section, four FAQ items, and a CTA. But it only targets the main keyword. It does not cover keyword variants, supported and unsupported inputs, failure troubleshooting, what to do with the result, or related tools in the same workflow.",
+      "expected_output": "Should flag this as incomplete SEO content. A serious public Tool page must cover the search-demand map, not just the primary keyword: core task terms, synonym/platform/object variants, input/output terms, failure and troubleshooting queries, boundary/privacy/permission queries, result-usage queries, and related next-step tools. It should require support scope, non-support scope, failure recovery, result usage guidance, and workflow-based internal links as crawlable HTML sections or clear in-page content. FAQ alone is not enough and keyword stuffing is not acceptable.",
+      "assertions": [
+        "Flags primary-keyword-only content as incomplete",
+        "Requires coverage of core, variant, input/output, failure, boundary, result-usage, and next-step search intents",
+        "Requires support scope and unsupported scope",
+        "Requires failure troubleshooting and recovery guidance",
+        "Requires result usage guidance and workflow-based related tool links",
+        "Does not accept FAQ-only coverage or keyword stuffing"
+      ],
+      "files": []
+    },
+    {
+      "id": 17,
+      "prompt": "A tool page hero places the H1 and intro on the left, and a large right-side card with tool category, reading time, updated date, and keyword tags. The page does not clearly tell users what concrete results they can get or why those results matter.",
+      "expected_output": "Should flag this as both a content and UI failure. A serious public Tool page needs a clear 'what you get' / user-value module with concrete result items and their value, such as files, reports, drafts, checklists, recommendations, download actions, source links, export options, or failure reasons depending on the tool. It should not use reading time, category, updated date, keyword tags, or generic metadata as a substitute for user value. The value module should not sit as a right-side companion to the hero title; it should appear near the workspace, below the hero/intro, before the result area, or as an independent section/band where users are deciding whether to use the tool.",
+      "assertions": [
+        "Requires a clear 'what you get' / user-value module",
+        "Requires concrete result items and corresponding user value",
+        "Rejects reading time/category/updated date/keyword tags as substitutes for value",
+        "Rejects placing this value module as a hero-right card paired with the H1",
+        "Recommends placement near the workspace, below hero/intro, before results, or as an independent section"
+      ],
+      "files": []
+    },
+    {
+      "id": 18,
+      "prompt": "A page section titled 'What a good downloader should have' says the main standards are that users know supported links before input, know what is happening while processing, and understand possible failure causes. It is laid out as a left 1-2-3-4 text list and a right dense paragraph explaining the same points.",
+      "expected_output": "Should flag this as a P0 content and UI issue. 'Good tool standards' must prioritize user decision criteria such as stability, speed, output quality, cost/free usage, ease of use, compatibility, and trust/safety. Process transparency, status visibility, and failure explanations are useful supporting points, but they should not be presented as the core standards unless the specific search intent demands them. The layout should not use a left numbered list plus right dense paragraph that repeats the same ideas; it should be rewritten as compact standard cards, a comparison table, a single-column section, or moved into FAQ/boundary content if it is mainly support/failure/privacy explanation.",
+      "assertions": [
+        "Rejects process transparency as the primary 'good standard' when user outcome standards are missing",
+        "Requires standards like stability, speed, quality, cost/free, ease, compatibility, and trust/safety",
+        "Allows process transparency and failure explanations only as supporting standards",
+        "Rejects left numbered list plus right dense paragraph repetition",
+        "Suggests compact cards, comparison table, single-column section, or FAQ/boundary placement"
+      ],
+      "files": []
+    },
+    {
+      "id": 19,
+      "prompt": "A new public SEO tool page has only one generated illustration inside the page body. There is no full-bleed hero background image, and some generated image labels are in Chinese.",
+      "expected_output": "Should flag this as an Asset Gate blocker. Serious public Tool pages require at least four imagegen-generated bitmap assets by default: one full Hero background image and three inline visuals tied to concrete page sections. The Hero image should fill the hero/first-screen area, support localized HTML H1/intro overlay, and itself communicate the tool's function and user value with low information density. Inline visuals should complement specific copy and vary in composition. Any text inside generated images must be English-only short labels; localized SEO copy belongs in HTML, not inside the image.",
+      "assertions": [
+        "Requires at least four imagegen-generated assets for serious public Tool pages",
+        "Requires one full Hero background image, not just an inline illustration",
+        "Requires three inline visuals tied to concrete page sections",
+        "Requires the Hero image to communicate function and value while supporting HTML text overlay",
+        "Rejects non-English text inside generated images",
+        "Keeps localized SEO copy in HTML rather than in image pixels"
+      ],
+      "files": []
+    },
+    {
+      "id": 20,
+      "prompt": "A tool workspace form has a title, a paragraph explaining supported links, a field label, placeholder, full CTA, and then a large helper card explaining browser conversion, privacy, unsupported/private/deleted content, and failure boundaries. The workspace header also has a small decorative keyword/tag button that is not an action.",
+      "expected_output": "Should flag this as a P0 UI failure. The form must pass a 3-second action test: users should understand the input, action, and result wait state without reading long explanations. The form should keep only the task title, concise labels, example placeholders, required validation, and the primary CTA. Support scope, failure boundaries, privacy/copyright/platform limits, and conversion explanations should move to page modules, result guidance, FAQ, or a lightweight tooltip/popover when truly needed. Workspace headers should only contain real task actions or real state; decorative badges, chips, SEO labels, or non-action keyword buttons should be removed rather than treated as required UI.",
+      "assertions": [
+        "Rejects paragraph-heavy form introductions and large helper cards inside the form",
+        "Requires a 3-second action test for form clarity",
+        "Keeps form content to title, concise label, placeholder/example, validation, and CTA",
+        "Moves support/failure/privacy/copyright/platform explanations outside the form or into lightweight tooltip/popover",
+        "Rejects decorative non-action badges/chips/SEO labels in the workspace header",
+        "Does not solve SEO keyword coverage by showing keyword tags as controls"
+      ],
+      "files": []
+    }
+  ]
+}
