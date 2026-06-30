@@ -92,5 +92,5 @@ chmod +x "${DEV_SKILLS_DIR}/scripts/"*.sh 2>/dev/null || true
 
 info "完成。已链接 ${skills_per_dir} 个 skill × ${#SKILL_TARGET_DIRS[@]} 个平台目录（共 ${linked} 条 symlink）"
 info "适用: Cursor | Claude Code | Codex（请在安装目录的父目录打开项目；本脚本不强制同级项目名称）"
-info "请确保已设置: export CIBOS_SSH_KEY=~/.ssh/your_key"
+info "请确保已设置: export TOMAKO_SSH_KEY=~/.ssh/your_key"
 info "触发词示例: \$deploy-frontend  \$programmatic-seo"

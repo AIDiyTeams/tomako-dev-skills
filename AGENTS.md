@@ -14,7 +14,7 @@
 ## 前置条件
 
 ```bash
-export CIBOS_SSH_KEY=~/.ssh/your_deploy_key   # 团队统一 SSH 密钥
+export TOMAKO_SSH_KEY=~/.ssh/your_deploy_key   # 团队统一 SSH 密钥
 ./tomako-dev-skills/install.sh               # 首次或 skill 更新后
 ```
 

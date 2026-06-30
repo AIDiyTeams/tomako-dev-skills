@@ -52,7 +52,7 @@ usage() {
   -h, --help
 
 环境变量:
-  CIBOS_SSH_KEY        团队统一 SSH 私钥（推荐）
+  TOMAKO_SSH_KEY        团队统一 SSH 私钥（推荐）
   SERVER_HOST          默认 47.239.95.168
   LOCAL_FRONTEND_DIR   默认 <workspace>/Tomako
 EOF

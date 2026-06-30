@@ -1,13 +1,13 @@
 # shellcheck shell=bash
-# 团队统一 SSH 密钥解析（CIBOS_SSH_KEY）。
+# 团队统一 SSH 密钥解析（TOMAKO_SSH_KEY）。
 
 tomako_dev_skills_resolve_ssh_key() {
-  if [ -n "${CIBOS_SSH_KEY:-}" ]; then
-    if [ -f "${CIBOS_SSH_KEY}" ]; then
-      printf '%s\n' "${CIBOS_SSH_KEY}"
+  if [ -n "${TOMAKO_SSH_KEY:-}" ]; then
+    if [ -f "${TOMAKO_SSH_KEY}" ]; then
+      printf '%s\n' "${TOMAKO_SSH_KEY}"
       return 0
     fi
-    echo "[ERROR] CIBOS_SSH_KEY 指向的文件不存在: ${CIBOS_SSH_KEY}" >&2
+    echo "[ERROR] TOMAKO_SSH_KEY 指向的文件不存在: ${TOMAKO_SSH_KEY}" >&2
     return 1
   fi
 
@@ -19,13 +19,13 @@ tomako_dev_skills_resolve_ssh_key() {
     "${HOME}/.ssh/id_ecdsa"
   do
     if [ -f "${candidate}" ]; then
-      echo "[WARN] 未设置 CIBOS_SSH_KEY，回退使用: ${candidate}" >&2
+      echo "[WARN] 未设置 TOMAKO_SSH_KEY，回退使用: ${candidate}" >&2
       printf '%s\n' "${candidate}"
       return 0
     fi
   done
 
-  echo "[ERROR] 未找到 SSH 私钥。请 export CIBOS_SSH_KEY=~/.ssh/your_key" >&2
+  echo "[ERROR] 未找到 SSH 私钥。请 export TOMAKO_SSH_KEY=~/.ssh/your_key" >&2
   return 1
 }
 

@@ -18,7 +18,7 @@ Phase 2 计划：`deploy-backend`、`deploy-skills-ol`、`dev-skills-ol`
 ./tomako-dev-skills/install.sh
 
 # 2. 配置团队 SSH 密钥（shell profile 或当前终端）
-export CIBOS_SSH_KEY=~/.ssh/github_deploy_key
+export TOMAKO_SSH_KEY=~/.ssh/github_deploy_key
 
 # 3. 部署前端（同步 + preflight + 远程 build）
 ./tomako-dev-skills/scripts/deploy-frontend-local.sh full
@@ -100,12 +100,12 @@ git submodule add git@github.com:AIDiyTeams/tomako-dev-skills.git tomako-dev-ski
 ./tomako-dev-skills/install.sh
 ```
 
-### 关于 CIBOS_SSH_KEY
+### 关于 TOMAKO_SSH_KEY
 
 仅在使用 `$deploy-frontend` 部署前端时需要：
 
 ```bash
-export CIBOS_SSH_KEY=~/.ssh/your_key
+export TOMAKO_SSH_KEY=~/.ssh/your_key
 ```
 
 部署脚本需用 SSH 私钥登录服务器；`$programmatic-seo` 等产品/运营向能力无需设置。

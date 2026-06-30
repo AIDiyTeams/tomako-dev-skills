@@ -2,11 +2,11 @@
 
 ## SSH
 
-团队统一使用环境变量 `CIBOS_SSH_KEY`：
+团队统一使用环境变量 `TOMAKO_SSH_KEY`：
 
 ```bash
-export CIBOS_SSH_KEY=~/.ssh/github_deploy_key
-ssh -i "$CIBOS_SSH_KEY" root@47.239.95.168
+export TOMAKO_SSH_KEY=~/.ssh/github_deploy_key
+ssh -i "$TOMAKO_SSH_KEY" root@47.239.95.168
 ```
 
 未设置时，脚本按顺序探测：`github_deploy_key` → `id_ed25519` → `id_rsa` → `id_ecdsa`。

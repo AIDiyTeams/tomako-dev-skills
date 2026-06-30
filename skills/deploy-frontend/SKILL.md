@@ -25,7 +25,7 @@ description: Deploy Tomako frontend from local multi-repo workspace to productio
 
 ## 执行协议
 
-1. 确认 `CIBOS_SSH_KEY` 已设置（或本机有可用的 fallback 密钥）
+1. 确认 `TOMAKO_SSH_KEY` 已设置（或本机有可用的 fallback 密钥）
 2. 读 [references/server-config.md](references/server-config.md) 和 [references/troubleshooting.md](references/troubleshooting.md)
 3. 在 workspace 根目录执行脚本（默认含 preflight）
 
@@ -33,7 +33,7 @@ description: Deploy Tomako frontend from local multi-repo workspace to productio
 
 | 项 | 默认值 |
 | --- | --- |
-| SSH 密钥 | `CIBOS_SSH_KEY`（未设置则探测 `github_deploy_key` / `id_ed25519`） |
+| SSH 密钥 | `TOMAKO_SSH_KEY`（未设置则探测 `github_deploy_key` / `id_ed25519`） |
 | 服务器 | `root@47.239.95.168:22` |
 | 本地代码 | `<workspace>/Tomako` |
 | 远程目录 | `/opt/cibos/foldos` |
@@ -42,7 +42,7 @@ description: Deploy Tomako frontend from local multi-repo workspace to productio
 
 ```bash
 # workspace 根目录
-export CIBOS_SSH_KEY=~/.ssh/github_deploy_key
+export TOMAKO_SSH_KEY=~/.ssh/github_deploy_key
 
 # 完整流程
 ./tomako-dev-skills/scripts/deploy-frontend-local.sh full

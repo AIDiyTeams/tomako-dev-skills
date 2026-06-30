@@ -3,14 +3,14 @@
 ## SSH
 
 ```bash
-export CIBOS_SSH_KEY=~/.ssh/github_deploy_key
-ssh -i "$CIBOS_SSH_KEY" root@47.239.95.168
+export TOMAKO_SSH_KEY=~/.ssh/github_deploy_key
+ssh -i "$TOMAKO_SSH_KEY" root@47.239.95.168
 ```
 
 | 错误 | 处理 |
 | --- | --- |
-| `Permission denied (publickey)` | 联系管理员将公钥加入服务器；确认 `CIBOS_SSH_KEY` 路径正确 |
-| `CIBOS_SSH_KEY 指向的文件不存在` | 检查 export 路径 |
+| `Permission denied (publickey)` | 联系管理员将公钥加入服务器；确认 `TOMAKO_SSH_KEY` 路径正确 |
+| `TOMAKO_SSH_KEY 指向的文件不存在` | 检查 export 路径 |
 | `Connection timed out` | VPN / 安全组 22 端口 |
 
 ## preflight 失败
@@ -33,7 +33,7 @@ pnpm lint && pnpm exec tsc --noEmit && NEXT_PUBLIC_SITE_URL=https://tomako.ai pn
 ## 回滚
 
 ```bash
-ssh -i "$CIBOS_SSH_KEY" root@47.239.95.168
+ssh -i "$TOMAKO_SSH_KEY" root@47.239.95.168
 cd /opt/cibos/foldos && git checkout <sha>
 cd /opt/cibos && docker compose up -d --build frontend
 ```
