@@ -36,7 +36,7 @@
 
 - `src/app/[locale]/tools/page.tsx`：Tools index。
 - `src/app/[locale]/tools/[slug]/page.tsx`：共享详情路由。
-- `src/features/tools/registry.ts`：Tool module registry。
+- `src/features/tools/registry.ts`：Tool module registry（P0：新建页面必须在此注册，否则 `/tools` 列表、详情路由、`generateStaticParams` 均不可用）。
 - `src/features/tools/types.ts`：`ToolSpec` 类型。
 - `src/features/tools/{slug}/{slug}.spec.ts`：SEO/list metadata、状态、MCP、widget id。
 - `src/features/tools/{slug}/{slug}.container.tsx`：页面组合。

@@ -80,6 +80,23 @@ description: Build, review, or debug Tomako programmatic SEO tool pages end-to-e
 
 不需要把需求问成完整 PRD。先拿到足够决定架构、输入输出、风险边界和第一版价值的信息。如果输入、输出、运行时或风险边界仍影响实现，问 2 到 5 个短问题；如果用户要求先做草案，必须写明假设。
 
+## 新建页面代码必做（常被漏掉）
+
+写完 `spec.ts` 和 `container.tsx` 后，**必须立刻注册**，不能只建目录就宣称页面完成。Tomako 的列表页、详情路由和 `generateStaticParams` 都读 `src/features/tools/registry.ts`，未注册时会出现：
+
+- `/zh/tools`、`/en/tools` 列表页找不到该工具
+- `/zh/tools/{slug}` 详情页 404
+- 构建产物不含该 slug 的静态参数
+
+最小注册清单（与 [tool-page-implementation.md](references/tool-page-implementation.md) 步骤一致）：
+
+1. **`src/features/tools/registry.ts`**（P0，必做）：import `spec` 与 `Container`，在 `toolRegistry` 数组追加 `{ spec, Container }`。
+2. **`src/components/tools/registry.ts`**（有 widget 时必做）：注册 widget id。
+3. **i18n**：`src/i18n/messages/{zh,en}/tools/` 添加文案，并在两个 locale 的 `tools/index.ts` 导出。
+4. **slug alias**（如需要）：在 `registry.ts` 的 `toolSlugAliases` 补旧 URL 映射。
+
+交付前至少验证：目标 slug 出现在 `toolRegistry`；`status: "published"` 时能在 `/tools` 列表看到；`/zh/tools/{slug}` 与 `/en/tools/{slug}` 可访问。
+
 ## 总体判断
 
 默认判断：大多数 Tomako Tool 页面需要后端、云端 Agent、LLM Task、URL/文档抓取、分析、生成或结构化写回。纯前端只适合明确低风险、确定性、自包含的计算器、转换器、格式化器或清楚标注的本地 demo。
@@ -92,6 +109,7 @@ description: Build, review, or debug Tomako programmatic SEO tool pages end-to-e
 
 - 读取了哪些 Gate 文件。
 - 改了哪些文件或做了哪些诊断。
+- 是否已在 `src/features/tools/registry.ts`（及 widget registry）注册；列表页与详情路由是否已验证。
 - 跑了哪些验证。
 - 哪些生产风险仍未验证，例如后端、cc-connect、Skills-OL 部署、sitemap、真实 Agent 返回。
 

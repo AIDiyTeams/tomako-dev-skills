@@ -54,6 +54,8 @@ Skills-OL 变更按脚本提供的 dry-run 或真实写回路径验证。
 
 检查：
 
+- 已在 `src/features/tools/registry.ts` 注册 `{ spec, Container }`；有 widget 时也已注册 `src/components/tools/registry.ts`。
+- `status: "published"` 时，`/zh/tools` 与 `/en/tools` 列表页能看到该工具。
 - `/zh/tools/{slug}` 可访问。
 - `/en/tools/{slug}` 可访问。
 - slug 是用户自然会访问的 URL。

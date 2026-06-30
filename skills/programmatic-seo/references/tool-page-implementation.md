@@ -43,11 +43,38 @@ src/i18n/messages/{zh,en}/tools/
 2. 添加 `src/features/tools/{slug}/{slug}.spec.ts`。
 3. 添加 `src/features/tools/{slug}/{slug}.container.tsx`。
 4. 有交互时添加 `src/components/tools/{widget}.tsx`。
-5. 注册 `src/features/tools/registry.ts`。
+5. **P0：注册 `src/features/tools/registry.ts`**（写完 spec/container 后立刻做，不要拖到最后）。
 6. 有 widget 时注册 `src/components/tools/registry.ts`。
 7. 添加中英文 i18n messages，并在两个 locale 的 `tools/index.ts` 导出。
 8. 有图片时放到 `public/tools/`。
 9. 按需运行 lint/build/MCP 生成，并检查桌面和移动端。
+
+### Feature registry（P0）
+
+`toolRegistry` 是工具页面的唯一入口表。`listPublishedTools()`、`getToolModule()`、`getToolStaticParams()`、`/tools` 列表页都依赖它。只建 `spec.ts` / `container.tsx` 而不注册，详情页会 404、列表页不会出现该工具。
+
+在 `src/features/tools/registry.ts` 中：
+
+```ts
+import { MyToolContainer } from "./my-tool/my-tool.container";
+import { myToolSpec } from "./my-tool/my-tool.spec";
+
+export const toolRegistry: ToolModule[] = [
+  // ...existing entries
+  {
+    spec: myToolSpec,
+    Container: MyToolContainer,
+  },
+];
+```
+
+若用户会访问旧 slug，在 `toolSlugAliases` 追加映射，例如 `"old-slug": "my-tool"`。
+
+注册后验证：
+
+- `listToolModules()` 能拿到新条目。
+- `status: "published"` 时 `/zh/tools` 与 `/en/tools` 列表可见。
+- `/zh/tools/{slug}`、`/en/tools/{slug}` 可打开。
 
 ## ToolSpec
 
@@ -207,8 +234,8 @@ Handler 规则：
 
 ## 常见错误
 
-- spec 写了但忘记 feature registry。
-- widget 写了但忘记 widget registry。
+- spec/container 写了但忘记 `src/features/tools/registry.ts`（最常见：列表页找不到、详情 404、静态构建缺 slug）。
+- widget 写了但忘记 `src/components/tools/registry.ts`。
 - 正文写在 TSX 而不是 i18n。
 - `mcp.enabled` 开了但没有 manifest/handler。
 - 忘记运行 `pnpm tools:generate-mcp`。
