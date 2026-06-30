@@ -1,8 +1,6 @@
 # tomako-dev-skills
 
-Tomako 团队工程协作 Skills 与部署脚本（试点版，位于 monorepo 内）。
-
-未来计划：拆为 private 仓库 `AIDiyTeams/tomako-dev-skills`，以 git submodule 挂载到 `tomako-workspace`。
+Tomako 团队工程协作 Skills 与部署脚本。独立仓库：`AIDiyTeams/tomako-dev-skills`，以 `git clone` 或 submodule 挂载到工作区根目录（与 `Tomako/`、`Tomako-portal/` 并列，根目录名称自定）。
 
 ## 包含的 Skills（Phase 1）
 
@@ -16,7 +14,7 @@ Phase 2 计划：`deploy-backend`、`deploy-skills-ol`、`dev-skills-ol`
 ## 快速开始
 
 ```bash
-# 1. 在 tomako-workspace 根目录安装 skill 链接
+# 1. 在工作区根目录安装 skill 链接（根目录名称自定，需含 Tomako/、Tomako-portal/、tomako-dev-skills/）
 ./tomako-dev-skills/install.sh
 
 # 2. 配置团队 SSH 密钥（shell profile 或当前终端）
@@ -30,7 +28,7 @@ export CIBOS_SSH_KEY=~/.ssh/github_deploy_key
 
 ```text
 tomako-dev-skills/
-├── skills/                  # Agent Skills（挂载到 .cursor/skills/）
+├── skills/                  # Agent Skills（install.sh 链接到各平台 skills 目录）
 ├── scripts/                 # 可执行部署/联调脚本
 │   └── lib/                 # workspace 路径、SSH 公共逻辑
 ├── config/                  # 默认环境变量（不含密钥）
@@ -43,13 +41,74 @@ tomako-dev-skills/
 - **本仓库**：工程开发、部署、联调（跨 Tomako / Tomako-portal / Skills-OL）
 - **`Tomako/.agents/skills/`**：40+ 营销/GTM skills，暂保留在前端仓库
 
-## Submodule 迁移（未来）
+## 安装与更新
+
+`tomako-dev-skills` 是团队给 AI 助手准备的工程协作 Skills。安装后，在**工作区根目录**即可让 Cursor / Claude Code / Codex 使用 `$programmatic-seo`、`$deploy-frontend` 等触发词。
+
+### 准备条件
+
+工作区根目录名称自定，需是你平时打开 AI 助手的那个 multi-repo 目录，例如：
+
+```text
+你的工作目录/          # 名称随意
+  Tomako/
+  Tomako-portal/
+  Skills-OL/           # 常见，非必需
+  tomako-dev-skills/   # clone 后出现
+```
+
+### 首次安装
 
 ```bash
-# 当独立仓库就绪后：
+cd /你的工作目录/路径
+git clone git@github.com:AIDiyTeams/tomako-dev-skills.git
+./tomako-dev-skills/install.sh
+```
+
+安装成功后会看到类似输出：
+
+```text
+linked .cursor/skills/programmatic-seo
+linked .claude/skills/deploy-frontend
+完成
+```
+
+重新打开 AI 助手后，可直接输入例如：
+
+```text
+$programmatic-seo 帮我规划一个新的 SEO 工具页
+$programmatic-seo 帮我检查这个工具页是否符合上线标准，不要改代码，先输出问题清单
+```
+
+### 更新 skills
+
+团队更新 skills 后，在工作区根目录执行：
+
+```bash
+cd tomako-dev-skills && git pull && cd ..
+./tomako-dev-skills/install.sh
+```
+
+然后重新打开 AI 助手即可。
+
+### Submodule 方式（可选）
+
+若工作区用 git submodule 管理，在工作区根目录执行：
+
+```bash
 git submodule add git@github.com:AIDiyTeams/tomako-dev-skills.git tomako-dev-skills
 ./tomako-dev-skills/install.sh
 ```
+
+### 关于 CIBOS_SSH_KEY
+
+仅在使用 `$deploy-frontend` 部署前端时需要：
+
+```bash
+export CIBOS_SSH_KEY=~/.ssh/your_key
+```
+
+部署脚本需用 SSH 私钥登录服务器；`$programmatic-seo` 等产品/运营向能力无需设置。
 
 ## 相关文档
 

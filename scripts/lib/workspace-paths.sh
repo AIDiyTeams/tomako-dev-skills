@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# 解析 tomako-workspace 内各子项目路径。
+# 解析工作区根目录内各子项目路径（根目录名称自定，需含 Tomako/、Tomako-portal/、tomako-dev-skills/）。
 
 tomako_dev_skills_resolve_paths() {
   local scripts_dir="${1:?scripts_dir required}"
@@ -27,7 +27,7 @@ tomako_dev_skills_require_workspace() {
   done
 
   if [ "${missing}" -ne 0 ]; then
-    echo "[ERROR] 请在 tomako-workspace 根目录下使用，或设置 LOCAL_*_DIR 环境变量。" >&2
+    echo "[ERROR] 请在含 Tomako/、Tomako-portal/、Skills-OL/ 的工作区根目录下使用，或设置 LOCAL_*_DIR 环境变量。" >&2
     return 1
   fi
 }

@@ -6,15 +6,17 @@
 
 ## Workspace
 
-根目录：`tomako-workspace/`（在 Cursor 中打开此 multi-repo 根目录）。
+**工作区根目录**（文件夹名称自定）：包含 `Tomako/`、`Tomako-portal/`、`tomako-dev-skills/` 的 multi-repo 目录。在 Cursor / Claude Code / Codex 中打开此根目录，不要只打开 `Tomako/` 子目录。
 
-工程协作 Skills：`tomako-dev-skills/`（通过 `./tomako-dev-skills/install.sh` 链接到 `.cursor/skills/`）。
+识别方式：若当前目录下同时存在上述三个子目录，即视为工作区根；下文路径均相对该根目录。
+
+工程协作 Skills：运行 `./tomako-dev-skills/install.sh` 将 skills 链接到各 Agent 平台目录（如 `.cursor/skills/`、`.claude/skills/`、`.codex/skills/`）。
 
 主要子项目：
 
 - `Tomako/`：Next.js 前端，公开 SEO/Tool 页面。
 - `Tomako-portal/`：Java/Spring Boot 后端，LLM task、skill-result API。
-- `Skills-OL/`：cc-connect/Codex 运行时使用的在线 Skills 和脚本。
+- `Skills-OL/`：cc-connect/Codex 运行时使用的在线 Skills 和脚本（常见，非必需）。
 - `tomako-dev-skills/`：程序化 SEO、部署等工程 Skills 与脚本。
 
 工作区可能存在用户或其他 agent 的未提交改动。不要 revert 不属于自己的改动。

@@ -1,11 +1,11 @@
 ---
 name: deploy-frontend
-description: Deploy Tomako frontend from local tomako-workspace to production without git push. Use when the user invokes $deploy-frontend, asks for local frontend deploy, hotfix deploy, or wants to ship uncommitted Tomako changes to 168 faster than GitHub Actions.
+description: Deploy Tomako frontend from local multi-repo workspace to production without git push. Use when the user invokes $deploy-frontend, asks for local frontend deploy, hotfix deploy, or wants to ship uncommitted Tomako changes to 168 faster than GitHub Actions.
 ---
 
 # Tomako 前端本地直部署 Skill
 
-本 Skill 位于 `tomako-dev-skills/skills/deploy-frontend/`，在 **tomako-workspace 根目录** 生效。
+本 Skill 位于 `tomako-dev-skills/skills/deploy-frontend/`，在**工作区根目录**（含 `Tomako/`、`Tomako-portal/`、`tomako-dev-skills/`，名称自定）生效。
 
 触发词：`$deploy-frontend`、本地部署前端、未提交代码部署、热修复前端。
 

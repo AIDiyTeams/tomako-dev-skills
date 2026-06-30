@@ -5,7 +5,7 @@ description: Build, review, or debug Tomako programmatic SEO tool pages end-to-e
 
 # 程序化 SEO Skill
 
-本 Skill 位于 `tomako-dev-skills/skills/programmatic-seo/`。在 tomako-workspace 根目录通过 `$programmatic-seo` / `$pseo` 触发。
+本 Skill 位于 `tomako-dev-skills/skills/programmatic-seo/`。在**工作区根目录**（含 `Tomako/`、`Tomako-portal/`、`tomako-dev-skills/` 的文件夹，名称自定）通过 `$programmatic-seo` / `$pseo` 触发。
 
 本 Skill 是 Tomako 程序化 SEO 工具页面的总入口。它不只是文档目录，而是一个强制读取、任务路由和验收调度器。每次新建、修复、复盘或发布 Tool/SEO 页面，都必须先读取本文件，再按下面的阅读协议读取关联 MD。
 

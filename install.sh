@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# 将 tomako-dev-skills 挂载到 tomako-workspace 内各 Agent 平台的 skills 目录。
+# 将 tomako-dev-skills 挂载到工作区根目录内各 Agent 平台的 skills 目录。
+# 工作区根目录名称自定，需包含 Tomako/、Tomako-portal/、tomako-dev-skills/。
 # canonical 来源：tomako-dev-skills/skills/
 #
 # 平台目录（均在 workspace 根目录）：
@@ -29,8 +30,8 @@ info() { echo "[install] $*"; }
 warn() { echo "[install][WARN] $*"; }
 
 if [ ! -d "${WORKSPACE_ROOT}/Tomako" ] || [ ! -d "${WORKSPACE_ROOT}/Tomako-portal" ]; then
-  echo "[install][ERROR] 未检测到 tomako-workspace 结构（缺少 Tomako/ 或 Tomako-portal/）" >&2
-  echo "请在 tomako-workspace 根目录运行: ./tomako-dev-skills/install.sh" >&2
+  echo "[install][ERROR] 未检测到工作区结构（根目录需包含 Tomako/ 与 Tomako-portal/）" >&2
+  echo "请在含 tomako-dev-skills/ 的工作区根目录运行: ./tomako-dev-skills/install.sh" >&2
   exit 1
 fi
 
@@ -85,6 +86,6 @@ skills_per_dir=$((linked / ${#SKILL_TARGET_DIRS[@]}))
 chmod +x "${DEV_SKILLS_DIR}/scripts/"*.sh 2>/dev/null || true
 
 info "完成。已链接 ${skills_per_dir} 个 skill × ${#SKILL_TARGET_DIRS[@]} 个平台目录（共 ${linked} 条 symlink）"
-info "适用: Cursor | Claude Code | Codex（请在 tomako-workspace 根目录打开项目）"
+info "适用: Cursor | Claude Code | Codex（请在含 Tomako/、Tomako-portal/、tomako-dev-skills/ 的工作区根目录打开项目）"
 info "请确保已设置: export CIBOS_SSH_KEY=~/.ssh/your_key"
 info "触发词示例: \$deploy-frontend  \$programmatic-seo"
