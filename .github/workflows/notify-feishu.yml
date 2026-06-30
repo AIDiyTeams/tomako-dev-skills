@@ -145,8 +145,9 @@ jobs:
 
           if [ -n "${FEISHU_WEBHOOK_SECRET:-}" ]; then
             TIMESTAMP="$(date +%s)"
-            SIGN="$(printf '%s\n%s' "$TIMESTAMP" "$FEISHU_WEBHOOK_SECRET" \
-              | openssl dgst -sha256 -hmac "" -binary \
+            STRING_TO_SIGN="$(printf '%s\n%s' "$TIMESTAMP" "$FEISHU_WEBHOOK_SECRET")"
+            SIGN="$(printf '' \
+              | openssl dgst -sha256 -hmac "$STRING_TO_SIGN" -binary \
               | base64)"
             PAYLOAD="{\"timestamp\":\"${TIMESTAMP}\",\"sign\":\"${SIGN}\",\"msg_type\":\"text\",\"content\":{\"text\":\"${ESCAPED_CONTENT}\"}}"
           fi
