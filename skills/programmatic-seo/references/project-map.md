@@ -6,18 +6,18 @@
 
 ## Workspace
 
-**工作区根目录**（文件夹名称自定）：包含 `Tomako/`、`Tomako-portal/`、`tomako-dev-skills/` 的 multi-repo 目录。在 Cursor / Claude Code / Codex 中打开此根目录，不要只打开 `Tomako/` 子目录。
+根目录：
 
-识别方式：若当前目录下同时存在上述三个子目录，即视为工作区根；下文路径均相对该根目录。
-
-工程协作 Skills：运行 `./tomako-dev-skills/install.sh` 将 skills 链接到各 Agent 平台目录（如 `.cursor/skills/`、`.claude/skills/`、`.codex/skills/`）。
+```text
+/Users/ereneren/Downloads/workspace/Tomako Workspace
+```
 
 主要子项目：
 
 - `Tomako/`：Next.js 前端，公开 SEO/Tool 页面。
 - `Tomako-portal/`：Java/Spring Boot 后端，LLM task、skill-result API。
-- `Skills-OL/`：cc-connect/Codex 运行时使用的在线 Skills 和脚本（常见，非必需）。
-- `tomako-dev-skills/`：程序化 SEO、部署等工程 Skills 与脚本。
+- `Skills-OL/`：cc-connect/Codex 运行时使用的在线 Skills 和脚本。
+- `designs/`：设计相关文件，当前按实际文件再确认。
 
 工作区可能存在用户或其他 agent 的未提交改动。不要 revert 不属于自己的改动。
 
@@ -36,7 +36,7 @@
 
 - `src/app/[locale]/tools/page.tsx`：Tools index。
 - `src/app/[locale]/tools/[slug]/page.tsx`：共享详情路由。
-- `src/features/tools/registry.ts`：Tool module registry（P0：新建页面必须在此注册，否则 `/tools` 列表、详情路由、`generateStaticParams` 均不可用）。
+- `src/features/tools/registry.ts`：Tool module registry。
 - `src/features/tools/types.ts`：`ToolSpec` 类型。
 - `src/features/tools/{slug}/{slug}.spec.ts`：SEO/list metadata、状态、MCP、widget id。
 - `src/features/tools/{slug}/{slug}.container.tsx`：页面组合。
@@ -129,6 +129,8 @@ any -> FAILED
 - `brand-crawl.mjs`
 - `skills/llm-task-deployer/SKILL.md`
 
+涉及新 Skill、新脚本、脚本参数、写回逻辑、resultType 或依赖变更时，必须读取 `docs/llm-task-deployment-guide.md`。本地 `Skills-OL/` 文件变更和 Git push 不等于 cc-connect runtime 已更新；必须确认服务器 `~/Skills-OL` 已拉取目标 commit，并且 `cc-connect` 已重启或明确不需要重启。
+
 结构化写回契约：
 
 ```json
@@ -153,3 +155,5 @@ Agent 回复应简短，不粘贴完整 JSON。
 5. 旧 README 或历史文档。
 
 涉及上线时，必须说明观察到的代码/文档/生产状态不一致。
+
+如果页面需要真实 Agent/LLM 才能测试，必须同时说明 Tomako 前端、Tomako-portal 后端、Skills-OL 和 cc-connect 的目标环境状态。任何一层未部署或版本未知，都不能宣称页面可测试或完成。

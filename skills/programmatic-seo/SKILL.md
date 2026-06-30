@@ -5,19 +5,17 @@ description: Build, review, or debug Tomako programmatic SEO tool pages end-to-e
 
 # 程序化 SEO Skill
 
-本 Skill 位于 `tomako-dev-skills/skills/programmatic-seo/`。在**工作区根目录**（含 `Tomako/`、`Tomako-portal/`、`tomako-dev-skills/` 的文件夹，名称自定）通过 `$programmatic-seo` / `$pseo` 触发。
-
 本 Skill 是 Tomako 程序化 SEO 工具页面的总入口。它不只是文档目录，而是一个强制读取、任务路由和验收调度器。每次新建、修复、复盘或发布 Tool/SEO 页面，都必须先读取本文件，再按下面的阅读协议读取关联 MD。
 
 ## 三层机制
 
-1. **入口层：`SKILL.md`**
+1. **入口层：`SKILL.md`**  
    判断任务类型，建立“已读/未读”状态表，决定读取顺序，并在交付前检查是否补读完整。
 
-2. **规则层：`references/*.md`**
+2. **规则层：`references/*.md`**  
    所有 P0 规则、执行流程、验收清单都放在一层 references 文件中。不要依赖深层跳转。
 
-3. **验收层：读后自检 + 真实验证**
+3. **验收层：读后自检 + 真实验证**  
    开发前先读规则；开发中按问题补读；交付前必须回到未读列表补齐，并说明哪些 Gate 已检查。
 
 ## 阅读状态协议
@@ -30,10 +28,10 @@ description: Build, review, or debug Tomako programmatic SEO tool pages end-to-e
 阅读状态：
 - [x] SKILL.md
 - [ ] references/p0-page-brief.md
+- [ ] references/p0-content-gates.md
 - [ ] references/p0-ui-gates.md
 - [ ] references/p0-asset-gates.md
 - [ ] references/p0-runtime-gates.md
-- [ ] references/p0-content-gates.md
 - [ ] references/p0-launch-checklist.md
 - [ ] references/tool-page-implementation.md
 - [ ] references/project-map.md
@@ -52,18 +50,19 @@ description: Build, review, or debug Tomako programmatic SEO tool pages end-to-e
 新建或重做 Tool 页面时，按顺序读取：
 
 1. [p0-page-brief.md](references/p0-page-brief.md)：开工前需求、输入输出、搜索意图和范围确认。
-2. [project-map.md](references/project-map.md)：当前 Tomako / Tomako-portal / Skills-OL 项目结构。
-3. [tool-page-implementation.md](references/tool-page-implementation.md)：ToolSpec、container、widget、i18n、registry、组件库和代码落点。
+2. [p0-content-gates.md](references/p0-content-gates.md)：先从用户视角、SEO 增长视角和文案视角确定信息架构、模块清单、价值表达和疑问覆盖。
+3. [project-map.md](references/project-map.md)：当前 Tomako / Tomako-portal / Skills-OL 项目结构。
 4. [p0-runtime-gates.md](references/p0-runtime-gates.md)：是否需要后端、Agent、LLM Task、Skills-OL、Skill Result。
-5. [p0-ui-gates.md](references/p0-ui-gates.md)：表单、组件、布局、交互、响应式和 UI 质量门槛。
-6. [p0-asset-gates.md](references/p0-asset-gates.md)：视觉图、生图、before/after 物料和图片验收。
-7. [p0-content-gates.md](references/p0-content-gates.md)：SEO 文案、FAQ、metadata、可搜索性和可抓取内容。
+5. [tool-page-implementation.md](references/tool-page-implementation.md)：ToolSpec、container、widget、i18n、registry、组件库和代码落点。
+6. [p0-ui-gates.md](references/p0-ui-gates.md)：基于已确定的信息模块，设计表单、布局、交互、响应式和 UI 呈现。
+7. [p0-asset-gates.md](references/p0-asset-gates.md)：围绕已确定的价值模块和疑问模块生成视觉图、生图和 before/after 物料。
 8. [p0-launch-checklist.md](references/p0-launch-checklist.md)：发布、索引、路由、构建、浏览器 QA 和风险记录。
 
 按任务类型优先读取：
 
 - 需求不清、新页面开工：先读 `p0-page-brief.md`。
-- UI、表单、布局、组件、移动端：先读 `p0-ui-gates.md` 和 `tool-page-implementation.md`。
+- 完整页面诊断、SEO 优化、页面重做：先读 `p0-content-gates.md`，确定信息和文案模块，再读 `p0-ui-gates.md` 做呈现。
+- UI、表单、布局、组件、移动端：先读 `p0-ui-gates.md` 和 `tool-page-implementation.md`；若涉及整页结构或模块取舍，必须补读 `p0-content-gates.md`。
 - 配图、生图、Hero、视觉物料：先读 `p0-asset-gates.md`。
 - 后端、Agent、LLM Task、Skills-OL、异步状态、结果不对：先读 `p0-runtime-gates.md`。
 - SEO 文案、FAQ、metadata、页面模块：先读 `p0-content-gates.md`。
@@ -80,22 +79,18 @@ description: Build, review, or debug Tomako programmatic SEO tool pages end-to-e
 
 不需要把需求问成完整 PRD。先拿到足够决定架构、输入输出、风险边界和第一版价值的信息。如果输入、输出、运行时或风险边界仍影响实现，问 2 到 5 个短问题；如果用户要求先做草案，必须写明假设。
 
-## 新建页面代码必做（常被漏掉）
+## 内容先行流程
 
-写完 `spec.ts` 和 `container.tsx` 后，**必须立刻注册**，不能只建目录就宣称页面完成。Tomako 的列表页、详情路由和 `generateStaticParams` 都读 `src/features/tools/registry.ts`，未注册时会出现：
+新建、重做、优化或诊断 SEO Tool 页面时，第一优先级不是 UI，而是从用户视角和 SEO 增长视角确认页面应该回答哪些问题、展示哪些价值、覆盖哪些搜索需求。
 
-- `/zh/tools`、`/en/tools` 列表页找不到该工具
-- `/zh/tools/{slug}` 详情页 404
-- 构建产物不含该 slug 的静态参数
+强制顺序：
 
-最小注册清单（与 [tool-page-implementation.md](references/tool-page-implementation.md) 步骤一致）：
+1. 先确认用户意图、输入、输出、搜索需求和用户疑虑。
+2. 再列出页面必须包含的信息模块和每个模块的目的。
+3. 再决定哪些信息放首屏、工作台附近、结果区、说明区、FAQ 或 CTA。
+4. 最后才进入 UI、布局、视觉物料和组件实现。
 
-1. **`src/features/tools/registry.ts`**（P0，必做）：import `spec` 与 `Container`，在 `toolRegistry` 数组追加 `{ spec, Container }`。
-2. **`src/components/tools/registry.ts`**（有 widget 时必做）：注册 widget id。
-3. **i18n**：`src/i18n/messages/{zh,en}/tools/` 添加文案，并在两个 locale 的 `tools/index.ts` 导出。
-4. **slug alias**（如需要）：在 `registry.ts` 的 `toolSlugAliases` 补旧 URL 映射。
-
-交付前至少验证：目标 slug 出现在 `toolRegistry`；`status: "published"` 时能在 `/tools` 列表看到；`/zh/tools/{slug}` 与 `/en/tools/{slug}` 可访问。
+禁止先套两栏、卡片、Hero、FAQ 或视觉模板，再倒推文案。UI 的职责是把已经确认的信息更清晰、更有吸引力地呈现出来；如果信息模块不清楚，必须回到 `p0-content-gates.md` 补齐，而不是继续调样式。
 
 ## 总体判断
 
@@ -109,11 +104,13 @@ description: Build, review, or debug Tomako programmatic SEO tool pages end-to-e
 
 - 读取了哪些 Gate 文件。
 - 改了哪些文件或做了哪些诊断。
-- 是否已在 `src/features/tools/registry.ts`（及 widget registry）注册；列表页与详情路由是否已验证。
 - 跑了哪些验证。
+- 远端部署状态：已部署并验证、无需部署，或明确阻塞。
 - 哪些生产风险仍未验证，例如后端、cc-connect、Skills-OL 部署、sitemap、真实 Agent 返回。
 
 不要因为 UI 看起来完成、请求返回 200、schema 能 parse、mock 能渲染，就宣称页面完成。必须按照对应 Gate 验收真实用户价值。
+
+Agent-backed 工具还必须完成远端运行时闭环：如果改了前端 LLM task service、后端、Skills-OL、cc-connect、schema、resultType 或环境变量，就要确认目标环境已部署/重启并跑 live QA；如果无法部署，必须把它作为 blocker 明说，不能把页面说成可测试或完成。
 
 ## 常用命令
 

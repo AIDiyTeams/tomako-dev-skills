@@ -108,6 +108,29 @@ Agent 生成类工具必须验证：
 
 `scene` 当前主要是 metadata，不是严格路由器。真正路由依赖 prompt、Skill 和脚本。
 
+## 生产部署闭环
+
+Agent-backed 工具不是“代码写完即可测试”。只要变更涉及前端 LLM task service、后端接口/状态机、Skills-OL Skill、Skills-OL 脚本、resultType、schema、cc-connect 运行目录或环境变量，就必须判断远端部署状态。
+
+P0 规则：
+
+- 如果用户目标是“能测试”“上线”“发布”“review 环境可用”或“直接实现并验证”，AI 必须把远端部署纳入任务闭环。
+- 有明确部署文档、权限和环境时，必须按项目部署说明执行远端部署或重启，并记录部署目标、命令、commit/版本、时间和结果。
+- 没有权限、服务器信息、密钥或部署窗口时，必须把它标为 blocker，说明缺什么、谁需要处理、应该执行哪些命令；不能把页面说成“已完成”或“可测试”。
+- 本地 `pnpm build`、dry-run、schema 校验、mock、旧 task、脚本本地执行都不能替代远端部署后的 live QA。
+- 本地前端代理到生产时，尤其要确认生产后端、cc-connect 和 Skills-OL 已经更新；否则本地页面会调用旧生产链路。
+- 改了 Skills-OL 文件后，必须确认 cc-connect 运行目录已拉取新代码并重启；只把代码推到 Git 远端不等于 Agent runtime 已更新。
+- 改了 Tomako-portal 后端后，必须确认目标后端环境已部署或明确记录未部署；只改本地 Java 代码不能证明线上 API 可用。
+- 改了 Tomako 前端后，必须确认目标前端环境已部署或明确记录未部署；本地页面可见不等于线上页面可测。
+
+完成条件三选一：
+
+1. **已部署并已验证**：远端前端/后端/Skills-OL/cc-connect 都在目标版本，且完成生产或目标环境 live QA。
+2. **无需部署**：本次没有改变任何远端运行时依赖，且使用当前生产版本即可完成 live QA。
+3. **明确阻塞**：缺少部署权限、服务器信息、密钥、CI/CD、发布窗口或负责人，已写清阻塞原因和下一步命令。
+
+禁止用“需要部署”一句话草草带过。交付时必须明确当前属于以上哪一种。
+
 ## 异步状态
 
 任务状态：
@@ -222,7 +245,7 @@ failed
 - 不同输入产生合理不同输出。
 - placeholder 输入提交前被拦截。
 - 缺失 Agent 核心产物时失败而不是 fallback。
-- 发布记录说明是否需要部署/restart Skills-OL 或 cc-connect。
+- 远端部署/restart 状态已闭环：已部署并验证、无需部署，或明确阻塞。
 
 ## Skills-OL 写回要求
 
@@ -268,4 +291,4 @@ POST /api/llm/tasks/{taskId}/messages
 - [ ] Skills-OL 写回脚本已验证。
 - [ ] 写回地址使用 HTTPS 规范域名，没有 http IP、301/302 跳转、方法改写或 body 丢失风险。
 - [ ] 已完成一次真实 live QA：submit -> Agent/Skills-OL writeback -> fetch `/api/skill-results/{taskId}` -> 前端渲染。lint、build、dry-run、schema 校验不能替代这一步。
-- [ ] 生产部署、cc-connect、Skills-OL 版本和重启要求已记录。
+- [ ] 远端部署闭环已完成：前端、后端、Skills-OL、cc-connect 的目标版本和重启状态已确认；若未完成，已标为 blocker，不能宣称可测试或完成。

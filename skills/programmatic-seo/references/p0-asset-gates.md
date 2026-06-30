@@ -2,7 +2,7 @@
 
 ## 使用时机
 
-涉及 Hero 图、右侧 before/after 图、说明区配图、生图 prompt、截图、产品预览、视觉物料或图片验收时，必须读取本文件。
+涉及 Hero 图、工作台右侧图、说明区配图、生图 prompt、截图、产品预览、视觉物料或图片验收时，必须读取本文件。
 
 本文件吸收原设计师规范中的视觉和配图要求，并按最新 P0 调整：图片主体要撑满，不能带大背景底、外层卡片、宽留白或装饰 blob。生图物料以视觉表达为主，不是把 UI 截图画得更漂亮。
 
@@ -70,29 +70,44 @@ serious public Tool 页面的核心视觉物料必须使用生图模型生成 bi
 
 ## 什么时候必须有图
 
-serious public Tool 页面默认至少需要 4 张由生图模型生成的视觉物料，除非用户明确要求做极简内测页或该页面不面向公开 SEO。
+serious public Tool 页面默认至少需要 5 张由生图模型生成的视觉物料，除非用户明确要求做极简内测页或该页面不面向公开 SEO。
 
-4 张图的默认配置：
+5 张图的默认配置：
 
 1. **Hero 背景图**：铺满 Hero 区或首屏大区域，作为 H1 / intro 的视觉背景。
-2. **正文配图 A**：补充页面某段价值文案、结果说明或使用场景。
-3. **正文配图 B**：补充支持范围、失败边界、结果质量或用户疑问。
-4. **正文配图 C**：补充下一步、结果使用、对比、专业感或场景化价值。
+2. **工作台右侧图**：放在左侧表单旁边，诱导用户开始生成。
+3. **正文配图 A**：补充页面某段价值文案、结果说明或使用场景。
+4. **正文配图 B**：补充支持范围、失败边界、结果质量或用户疑问。
+5. **正文配图 C**：补充下一步、结果使用、对比、专业感或场景化价值。
 
-前 3 张正文配图可以按页面内容自由选择位置，不需要每个 section 都有图，但必须服务具体段落，不能只是装饰。三张图之间要在构图、主体和表达目标上有差异。
+3 张正文配图可以按页面内容自由选择位置，不需要每个 section 都有图，但必须服务具体段落，不能只是装饰。三张图之间要在构图、主体和表达目标上有差异。
 
-第 4 张是 Hero 背景图，要求：
+Hero 配图要求：
 
-- 铺满 Hero 区大图，不是右侧小卡片。
+- Hero 配图必须生成透明背景 PNG，而不是一整张自带背景色的大图。
+- 页面 Hero 区域自身背景色保持 `#F7F6F2`；透明 PNG 直接透出这个底色，避免右侧出现独立色块、背景板或割裂感。
+- Hero 配图仍按共享 shell 的展示逻辑放在 1200px 容器范围内居右。
+- 使用 `object-contain object-right`，不要改回 `object-cover`，避免大屏无限放大、裁切异常或把透明图当背景铺满。
+- Hero 配图不是右侧小卡片，也不是带底色的整张场景背景。
 - 页面 H1 / intro / CTA 可以作为 HTML 文本覆盖在图上。
 - 图片本身也要有基础视觉元素，让用户一眼识别工具功能和价值。
 - 视觉表达非常简洁，信息密度和文字密度都低。
 - 能让用户感受到“这个页面是做什么的，我能从中得到什么”。
 - 不要把 Hero 做成左右分栏的标题 + 卡片，不要用阅读时间、工具分类、更新时间、关键词标签占据 Hero 视觉。
 
+工作台右侧图要求：
+
+- 这是左侧表单旁边的转化型视觉，不是正文说明配图。
+- 核心目标是让用户直观感到：只要提供少量简单输入，就能得到精美、专业、各具特色的结果。
+- 它要强化“我也想试一下”的冲动，优先展示结果吸引力、前后差异、完成后的漂亮产物或高质量输出感。
+- 重点不是展示很多结果，而是展示足够精美、可信、有差异的结果。
+- 文字必须极少，最多 1 到 3 个英文短标签；左侧表单已有文字，右侧图不要再讲逻辑。
+- 不要用前端代码、React/CSS/SVG、表格、卡片列表或流程图顶替。
+- 不要画成普通输入/输出面板或字段说明图；它必须像视觉物料，而不是功能结构图。
+
 优先需要图的位置：
 
-- 复杂表单右侧 before/after 视觉。
+- 复杂表单右侧转化视觉。
 - Hero 或首屏产品预览。
 - How it works、Result guidance、Use cases 等说明区。
 - 结果解读、判断标准、风险提示、输出示例。
@@ -107,16 +122,17 @@ serious public Tool 页面默认至少需要 4 张由生图模型生成的视觉
 
 已有真实产品截图不能替代 Hero 背景图，除非它本身已经是高质量、低信息密度、可铺满 Hero 的视觉资产。
 
-## 复杂表单右侧图
+## 工作台右侧图
 
-复杂表单的右侧图默认采用 before/after：
+复杂表单的右侧图默认采用 before/after 或高质量结果陈列：
 
 - Before：展示粗略输入或场景，例如 URL、产品名、短 brief、文件、关键词、选项、凌乱素材、待整理文档。
 - After：展示输出类型或价值结果，例如清晰文件包、报告、候选列表、评分、文档预览、建议卡、可交付素材。
 - 只用极短标签，不放段落。
+- 更强调 After 的精美程度和结果多样性，而不是把输入字段画出来。
 - 不展示真实生成结果，真实结果在下方结果区。
 - 主体贴近画布边缘，内容占据大部分图片。
-- 右侧图不要只是把表单字段和输出字段画成 UI；它要表达“从混乱到清晰”“从输入到可用产物”的视觉差异。
+- 右侧图不要只是把表单字段和输出字段画成 UI；它要表达“简单输入也能得到漂亮结果”的吸引力。
 
 ## 生图前必须读取的信息
 
@@ -131,7 +147,7 @@ serious public Tool 页面默认至少需要 4 张由生图模型生成的视觉
 - use case。
 - CTA 或结果价值。
 - 该图片主要服务的目标：体现产品价值，还是解决用户疑问。
-- 图片角色：Hero 背景图，还是正文配图 A/B/C。
+- 图片角色：Hero 背景图、工作台右侧图，还是正文配图 A/B/C。
 
 每张图只表达 1 到 3 个核心元素：
 
@@ -239,7 +255,7 @@ P0 禁止：
 
 ```text
 用途：Tomako SEO 工具页面视觉物料，低信息密度，高视觉中心。
-图片角色：[Hero background / inline visual A / inline visual B / inline visual C]
+图片角色：[Hero background / workspace side visual / inline visual A / inline visual B / inline visual C]
 页面语境：[H1 / 输入 / 动作 / 输出]
 图片目标：[体现产品价值 / 解决用户疑问]
 价值重点：[为什么这个工具值得用 / 好结果长什么样 / 相比替代方案更清楚或更省事]
@@ -255,11 +271,24 @@ P0 禁止：
 Hero 背景图额外加入：
 
 ```text
-Hero background: full-bleed wide composition for a website hero section.
+Hero visual: transparent-background PNG for a website hero section.
+The page hero section background color is #F7F6F2; do not bake a colored rectangle, canvas, or backdrop into the image.
+The visual will be placed inside a 1200px-wide frame, aligned to the right with object-contain object-right.
 Leave clean negative space for localized HTML H1 and intro overlay.
 The image itself should still communicate the tool's function and user value at a glance.
 No large text blocks, no UI dashboard, no card-in-card frame.
+No solid background fill, no separate right-side color block.
 Any text inside the image must be English only.
+```
+
+工作台右侧图额外加入：
+
+```text
+Workspace side visual: placed next to a compact form.
+Make users feel that a few simple inputs can produce beautiful, polished, varied results.
+Focus on attractive final outputs and before/after transformation, not on explaining form fields.
+Very low text density; at most 1-3 short English labels.
+No frontend UI diagram, no field list, no process chart, no dense cards.
 ```
 
 ## 文件落地
@@ -274,6 +303,7 @@ public/tools/{slug}-{section}.png
 
 ```text
 public/tools/{slug}-hero.png
+public/tools/{slug}-workspace.png
 public/tools/{slug}-value.png
 public/tools/{slug}-support.png
 public/tools/{slug}-use-case.png
@@ -286,15 +316,20 @@ public/tools/{slug}-use-case.png
 - `alt` 来自 i18n，描述图片的实际用途，不堆关键词。
 - 不要再给图片外层加厚白底、内边距、大阴影或二次卡片。
 - 图片文件本身不要自带额外背景底；页面容器负责排版，图片主体负责表达。
+- Hero 配图文件必须是透明 PNG；共享 shell 默认使用 `#F7F6F2` Hero 背景、1200px 右侧 frame、`object-contain object-right` 和 `(min-width: 1200px) 1200px, 100vw` sizes。
 - 关键 SEO 内容仍在 HTML 文本中。
 
 ## 图片验收
 
 交付前逐项检查：
 
-- [ ] serious public Tool 页面至少有 4 张生图视觉物料：1 张 Hero 背景图 + 3 张正文配图。
-- [ ] Hero 背景图铺满 Hero 区或首屏大区域，支持 H1 / intro 作为 HTML 文本覆盖。
-- [ ] Hero 背景图本身能点题，能让用户识别功能和价值，不是抽象装饰。
+- [ ] serious public Tool 页面至少有 5 张生图视觉物料：1 张 Hero 背景图 + 1 张工作台右侧图 + 3 张正文配图。
+- [ ] Hero 配图是透明背景 PNG，没有自带背景色、背景板、整张色块或右侧独立色块。
+- [ ] Hero 区域背景色为 `#F7F6F2`，透明 PNG 直接透出页面底色。
+- [ ] Hero 配图在 1200px 容器范围内居右，使用 `object-contain object-right`，没有被 `object-cover` 放大或裁切。
+- [ ] Hero 配图支持 H1 / intro 作为 HTML 文本覆盖。
+- [ ] Hero 配图本身能点题，能让用户识别功能和价值，不是抽象装饰。
+- [ ] 工作台右侧图能让用户感到简单输入即可得到精美结果，不是前端代码画的结构图或流程图。
 - [ ] 3 张正文配图分别服务具体段落或模块，构图和表达目标不重复。
 - [ ] 核心视觉物料来自生图模型生成的 bitmap 图片，不是前端代码、SVG、CSS 卡片或 `ToolGuideVisual`。
 - [ ] 如果未能生图，已记录为 blocker 或上线前必须补齐的例外，没有静默用代码图替代。
