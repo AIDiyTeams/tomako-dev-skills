@@ -127,13 +127,17 @@ sync_frontend() {
     RSYNC_SSH="ssh -i ${SSH_KEY} -p ${SERVER_PORT:-22} -o BatchMode=yes -o IdentitiesOnly=yes"
     rsync -avz --delete \
       --exclude node_modules --exclude .next --exclude .git --exclude .DS_Store \
+      --exclude .agents --exclude '.agents_*' --exclude .codex --exclude tmp \
+      --exclude public/tools/app-icon-resizer-hero-leaf-bg-v2.png \
       -e "${RSYNC_SSH}" \
       "${LOCAL_FRONTEND_DIR}/" \
       "${SERVER_USER}@${SERVER_HOST}:${REMOTE_FRONTEND_DIR}/"
   else
     tar czf - \
       -C "${LOCAL_FRONTEND_DIR}" \
-      --exclude node_modules --exclude .next --exclude .git --exclude .DS_Store . \
+      --exclude node_modules --exclude .next --exclude .git --exclude .DS_Store \
+      --exclude .agents --exclude '.agents_*' --exclude .codex --exclude tmp \
+      --exclude public/tools/app-icon-resizer-hero-leaf-bg-v2.png . \
     | tomako_dev_skills_ssh_cmd "${SSH_KEY}" "mkdir -p '${REMOTE_FRONTEND_DIR}' && cd '${REMOTE_FRONTEND_DIR}' && tar xzf -"
   fi
 
