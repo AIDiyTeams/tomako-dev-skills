@@ -51,7 +51,7 @@ usage() {
   Skills-OL
 
 冲突处理:
-  若 rebase/merge 产生冲突，脚本会列出冲突文件并跳过该仓库的 push。
+  若 rebase/merge/stash pop 产生冲突，脚本会列出冲突文件并停止该仓库的 push。
   人工解决冲突后，再次执行 push-all push 即可继续。
 
 环境变量:
@@ -130,6 +130,15 @@ print_repo_status() {
   echo
 }
 
+print_conflict_files_full() {
+  local path="$1"
+  local file
+  tomako_dev_skills_git_conflict_files "${path}" | while IFS= read -r file; do
+    [ -n "${file}" ] || continue
+    printf '    %s/%s\n' "${path}" "${file}"
+  done
+}
+
 repo_needs_push() {
   local path="$1"
   tomako_dev_skills_git_has_dirty "${path}" && return 0
@@ -141,14 +150,14 @@ repo_needs_push() {
 do_push_repo() {
   local name="$1"
   local path="$2"
-  local branch msg ahead behind conflicts upstream
+  local branch msg ahead behind conflicts upstream has_dirty stash_made=0 push_args=()
 
   repo_hdr "${name} (${path#${WORKSPACE_ROOT}/})"
 
   conflicts="$(tomako_dev_skills_git_conflict_files "${path}")"
   if [ -n "${conflicts}" ]; then
     error "存在未解决冲突，请先人工处理:"
-    echo "${conflicts}" | sed 's/^/    /'
+    print_conflict_files_full "${path}"
     FAILED=$((FAILED + 1))
     echo
     return 0
@@ -161,59 +170,61 @@ do_push_repo() {
     return 0
   fi
 
-  local has_dirty=0
+  has_dirty=0
   if tomako_dev_skills_git_has_dirty "${path}"; then
     has_dirty=1
   fi
 
-  read -r ahead behind <<<"$(tomako_dev_skills_git_ahead_behind "${path}" 2>/dev/null || echo "0 0")"
+  if upstream="$(tomako_dev_skills_git_upstream_ref "${path}")"; then
+    if [ "${DRY_RUN}" = "1" ]; then
+      info "[dry-run] git fetch origin --prune"
+    elif ! git -C "${path}" fetch origin --prune; then
+      error "fetch 失败"
+      FAILED=$((FAILED + 1))
+      echo
+      return 0
+    fi
+    read -r ahead behind <<<"$(tomako_dev_skills_git_ahead_behind "${path}" 2>/dev/null || echo "0 0")"
+  else
+    upstream=""
+    ahead=0
+    behind=0
+  fi
 
   if [ "${has_dirty}" = "0" ] && [ "${ahead:-0}" -eq 0 ]; then
-    info "无改动且无需 push，跳过"
+    info "无改动且无需处理"
     SKIPPED=$((SKIPPED + 1))
     echo
     return 0
   fi
-
-  if [ "${has_dirty}" = "1" ]; then
-    msg="${COMMIT_MSG}"
-    if [ "${DRY_RUN}" = "1" ]; then
-      info "[dry-run] git add -A && git commit -m \"${msg}\""
-    else
-      git -C "${path}" add -A
-      if ! git -C "${path}" commit -m "${msg}"; then
-        error "commit 失败"
-        FAILED=$((FAILED + 1))
-        echo
-        return 0
-      fi
-      info "已提交"
-      COMMITTED=$((COMMITTED + 1))
-    fi
-  fi
-
-  if ! upstream="$(tomako_dev_skills_git_upstream_ref "${path}")"; then
-    warn "未设置上游分支，跳过 push（可先 git push -u origin ${branch}）"
-    SKIPPED=$((SKIPPED + 1))
-    echo
-    return 0
-  fi
-
-  read -r ahead behind <<<"$(tomako_dev_skills_git_ahead_behind "${path}" 2>/dev/null || echo "0 0")"
 
   if [ "${behind:-0}" -gt 0 ]; then
     if [ "${DRY_RUN}" = "1" ]; then
-      info "[dry-run] git fetch && git pull $([ "${REBASE}" = "1" ] && echo --rebase)"
+      if [ "${has_dirty}" = "1" ]; then
+        info "[dry-run] git stash push -u -m \"push-all autostash ...\""
+      fi
+      info "[dry-run] git pull $([ "${REBASE}" = "1" ] && echo --rebase || echo --no-rebase) origin ${branch}"
+      if [ "${has_dirty}" = "1" ]; then
+        info "[dry-run] git stash pop"
+      fi
     else
+      if [ "${has_dirty}" = "1" ]; then
+        info "检测到未提交改动；先 stash，避免同步远程时覆盖本地代码..."
+        git -C "${path}" stash push -u -m "push-all autostash $(date +%Y%m%d-%H%M%S)"
+        stash_made=1
+      fi
+
       info "落后远程 ${behind} 个提交，先同步..."
-      git -C "${path}" fetch origin --prune
       if [ "${REBASE}" = "1" ]; then
         if ! git -C "${path}" pull --rebase origin "${branch}"; then
           error "rebase 失败"
           conflicts="$(tomako_dev_skills_git_conflict_files "${path}")"
           if [ -n "${conflicts}" ]; then
             error "冲突文件（请人工解决后再次执行 push-all）："
-            echo "${conflicts}" | sed 's/^/    /'
+            print_conflict_files_full "${path}"
+          fi
+          if [ "${stash_made}" = "1" ]; then
+            warn "本地未提交改动仍保存在 stash 中，请解决 rebase 后手动 git stash pop"
           fi
           FAILED=$((FAILED + 1))
           echo
@@ -225,7 +236,25 @@ do_push_repo() {
           conflicts="$(tomako_dev_skills_git_conflict_files "${path}")"
           if [ -n "${conflicts}" ]; then
             error "冲突文件（请人工解决后再次执行 push-all）："
-            echo "${conflicts}" | sed 's/^/    /'
+            print_conflict_files_full "${path}"
+          fi
+          if [ "${stash_made}" = "1" ]; then
+            warn "本地未提交改动仍保存在 stash 中，请解决 merge 后手动 git stash pop"
+          fi
+          FAILED=$((FAILED + 1))
+          echo
+          return 0
+        fi
+      fi
+
+      if [ "${stash_made}" = "1" ]; then
+        if git -C "${path}" stash pop; then
+          info "已恢复本地未提交改动"
+        else
+          error "恢复本地未提交改动时产生冲突，请人工解决："
+          conflicts="$(tomako_dev_skills_git_conflict_files "${path}")"
+          if [ -n "${conflicts}" ]; then
+            print_conflict_files_full "${path}"
           fi
           FAILED=$((FAILED + 1))
           echo
@@ -235,7 +264,40 @@ do_push_repo() {
     fi
   fi
 
-  read -r ahead behind <<<"$(tomako_dev_skills_git_ahead_behind "${path}" 2>/dev/null || echo "0 0")"
+  has_dirty=0
+  if tomako_dev_skills_git_has_dirty "${path}"; then
+    has_dirty=1
+  fi
+
+  if [ "${has_dirty}" = "1" ]; then
+    msg="${COMMIT_MSG}"
+    if [ "${DRY_RUN}" = "1" ]; then
+      info "[dry-run] git add -A && git commit -m \"${msg}\""
+    else
+      git -C "${path}" add -A
+      if ! git -C "${path}" commit -m "${msg}"; then
+        conflicts="$(tomako_dev_skills_git_conflict_files "${path}")"
+        if [ -n "${conflicts}" ]; then
+          error "commit 前仍存在冲突文件："
+          print_conflict_files_full "${path}"
+        else
+          error "commit 失败"
+        fi
+        FAILED=$((FAILED + 1))
+        echo
+        return 0
+      fi
+      info "已提交"
+      COMMITTED=$((COMMITTED + 1))
+    fi
+  fi
+
+  if [ -n "${upstream}" ]; then
+    read -r ahead behind <<<"$(tomako_dev_skills_git_ahead_behind "${path}" 2>/dev/null || echo "0 0")"
+  else
+    ahead=1
+    behind=0
+  fi
   if [ "${ahead:-0}" -eq 0 ] && [ "${has_dirty}" = "0" ]; then
     info "已与远程同步，无需 push"
     SKIPPED=$((SKIPPED + 1))
@@ -244,10 +306,21 @@ do_push_repo() {
   fi
 
   if [ "${DRY_RUN}" = "1" ]; then
-    info "[dry-run] git push origin ${branch}"
+    if [ -n "${upstream}" ]; then
+      info "[dry-run] git push origin ${branch}"
+    else
+      info "[dry-run] git push -u origin ${branch}"
+    fi
     PUSHED=$((PUSHED + 1))
   else
-    if git -C "${path}" push origin "${branch}"; then
+    if [ -n "${upstream}" ]; then
+      push_args=(push origin "${branch}")
+    else
+      push_args=(push -u origin "${branch}")
+      info "未设置上游分支，将执行 git push -u origin ${branch}"
+    fi
+
+    if git -C "${path}" "${push_args[@]}"; then
       info "已 push 到 origin/${branch}"
       PUSHED=$((PUSHED + 1))
     else
@@ -290,7 +363,7 @@ cmd_push() {
   tomako_dev_skills_foreach_repo do_push_repo
 
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  info "完成: 提交 ${COMMITTED} 个, push ${PUSHED} 个, 跳过 ${SKIPPED} 个, 失败 ${FAILED} 个"
+  info "完成: 提交 ${COMMITTED} 个, push ${PUSHED} 个, 无需处理/跳过 ${SKIPPED} 个, 失败 ${FAILED} 个"
   if [ "${FAILED}" -gt 0 ]; then
     warn "有仓库失败或存在冲突，解决后请再次执行 push-all push"
   fi

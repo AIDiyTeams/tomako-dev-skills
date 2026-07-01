@@ -51,7 +51,7 @@ tomako-workspace/
 
 1. **cwd = tomako-workspace 根目录**
 2. 默认先 `status` 了解各仓库状态（可选）
-3. 执行 `pull` 拉取远程最新
+3. 执行 `pull` 拉取远程最新；有未提交改动时默认自动 stash → pull/rebase → stash pop，不把仓库标记为跳过
 
 ## 常用命令
 
@@ -59,11 +59,11 @@ tomako-workspace/
 # 查看各仓库分支、领先/落后、未提交改动
 ./tomako-dev-skills/scripts/pull-all.sh status
 
-# 拉取全部（默认 rebase）
+# 拉取全部（默认 rebase；有未提交改动时默认 autostash）
 ./tomako-dev-skills/scripts/pull-all.sh pull
 
-# 有本地未提交改动时自动 stash → pull → pop
-AUTOSTASH=1 ./tomako-dev-skills/scripts/pull-all.sh pull
+# 禁止自动 stash：遇到未提交改动时失败并列出文件
+AUTOSTASH=0 ./tomako-dev-skills/scripts/pull-all.sh pull
 ```
 
 ## Agent 执行模板
@@ -75,21 +75,18 @@ AUTOSTASH=1 ./tomako-dev-skills/scripts/pull-all.sh pull
 ./tomako-dev-skills/scripts/pull-all.sh pull
 ```
 
-用户本地有未提交改动且希望一并拉取：
-
-```bash
-AUTOSTASH=1 ./tomako-dev-skills/scripts/pull-all.sh pull
-```
+默认流程已经会保护本地未提交改动并继续拉取；不要因为工作区 dirty 就跳过仓库。
 
 ## 冲突与异常
 
-- **有未提交改动**：默认跳过该仓库并列出文件；用 `AUTOSTASH=1` 可自动 stash
-- **pull 产生冲突**：脚本列出冲突文件，**不自动解决**；告知用户人工处理后重新执行 `$pull-all` 或 `$push-all`
+- **有未提交改动**：默认自动 stash，拉取后恢复；只有显式 `AUTOSTASH=0` 时才失败并列出文件
+- **pull/rebase 产生冲突**：脚本列出冲突文件完整路径，**不自动解决**；告知用户人工处理后重新执行 `$pull-all` 或 `$push-all`
+- **stash pop 产生冲突**：脚本列出冲突文件完整路径；告知用户先人工解决这些冲突，再执行 `$push-all` 提交
 - **某仓库不存在**：自动跳过，不报错
 
 ## 交付前答复要求
 
-汇总每个仓库的结果：已更新 / 跳过 / 失败，若有冲突列出完整文件路径。
+汇总每个仓库的结果：已更新 / 无需更新 / 失败，若有冲突列出完整文件路径。只有仓库不存在、无法识别分支等非业务处理场景才使用“跳过”。
 
 ## 相关
 

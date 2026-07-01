@@ -15,7 +15,7 @@ tomako_dev_skills_resolve_paths "${SCRIPT_DIR}"
 
 FILTER_RAW="${REPO_FILTER:-}"
 REPO_FILTER=""
-AUTOSTASH="${AUTOSTASH:-0}"
+AUTOSTASH="${AUTOSTASH:-1}"
 REBASE="${REBASE:-1}"
 FAILED=0
 PULLED=0
@@ -37,12 +37,14 @@ usage() {
 
 选项:
   -r, --repo NAME   只处理指定仓库（可重复）；别名见 push-all.sh --help
-  --autostash       有未提交改动时自动 stash 再 pull，成功后 pop
+  --autostash       有未提交改动时自动 stash 再 pull，成功后 pop（默认）
+  --no-autostash    有未提交改动时不自动 stash，直接失败并列出文件
   --no-rebase    使用 merge 而非 rebase 拉取
   -h, --help
 
 环境变量:
-  AUTOSTASH=1    等同 --autostash
+  AUTOSTASH=1    等同 --autostash（默认）
+  AUTOSTASH=0    等同 --no-autostash
   REBASE=0       等同 --no-rebase
   REPO_FILTER=...  空格分隔的仓库名（等同多个 --repo）
 EOF
@@ -70,11 +72,21 @@ parse_args() {
         tomako_dev_skills_git_repo_filter_add "${1}" || exit 1
         ;;
       --autostash) AUTOSTASH=1 ;;
+      --no-autostash) AUTOSTASH=0 ;;
       --no-rebase) REBASE=0 ;;
       -h|--help) usage; exit 0 ;;
       *) error "未知参数: $1"; usage; exit 1 ;;
     esac
     shift
+  done
+}
+
+print_conflict_files_full() {
+  local path="$1"
+  local file
+  tomako_dev_skills_git_conflict_files "${path}" | while IFS= read -r file; do
+    [ -n "${file}" ] || continue
+    printf '    %s/%s\n' "${path}" "${file}"
   done
 }
 
@@ -107,7 +119,7 @@ print_repo_status() {
 do_pull_repo() {
   local name="$1"
   local path="$2"
-  local branch pull_args=() stash_made=0
+  local branch pull_args=() stash_made=0 conflicts
 
   repo_hdr "${name} (${path#${WORKSPACE_ROOT}/})"
 
@@ -124,9 +136,9 @@ do_pull_repo() {
       git -C "${path}" stash push -u -m "pull-all autostash $(date +%Y%m%d-%H%M%S)"
       stash_made=1
     else
-      warn "有未提交改动，跳过 pull（可用 --autostash 或 AUTOSTASH=1）"
+      error "有未提交改动，且 AUTOSTASH=0；为避免覆盖本地代码，本仓库失败"
       tomako_dev_skills_git_dirty_files "${path}" | sed 's/^/    /'
-      SKIPPED=$((SKIPPED + 1))
+      FAILED=$((FAILED + 1))
       echo
       return 0
     fi
@@ -153,7 +165,7 @@ do_pull_repo() {
     conflicts="$(tomako_dev_skills_git_conflict_files "${path}")"
     if [ -n "${conflicts}" ]; then
       error "冲突文件（需人工解决后重新执行 pull-all 或 push-all）："
-      echo "${conflicts}" | sed 's/^/    /'
+      print_conflict_files_full "${path}"
     fi
     FAILED=$((FAILED + 1))
   fi
@@ -162,7 +174,13 @@ do_pull_repo() {
     if git -C "${path}" stash pop; then
       info "已恢复 stash"
     else
-      warn "stash pop 失败，请手动 git stash list / git stash pop"
+      conflicts="$(tomako_dev_skills_git_conflict_files "${path}")"
+      if [ -n "${conflicts}" ]; then
+        error "恢复本地改动时产生冲突，请人工解决："
+        print_conflict_files_full "${path}"
+      else
+        warn "stash pop 失败，请手动 git stash list / git stash pop"
+      fi
       FAILED=$((FAILED + 1))
     fi
   fi
@@ -185,7 +203,7 @@ cmd_pull() {
   if [ -n "${REPO_FILTER// }" ]; then
     info "限定仓库: ${REPO_FILTER}"
   fi
-  info "模式: fetch + pull $([ "${REBASE}" = "1" ] && echo --rebase || echo --no-rebase)"
+  info "模式: fetch + pull $([ "${REBASE}" = "1" ] && echo --rebase || echo --no-rebase), autostash=${AUTOSTASH}"
   tomako_dev_skills_foreach_repo do_pull_repo
 
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

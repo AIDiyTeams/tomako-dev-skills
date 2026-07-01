@@ -50,7 +50,7 @@ cd /path/to/tomako-workspace
 
 1. **status** — 查看各仓库未提交改动、领先/落后远程、未解决冲突
 2. **分析 diff** — 仅针对目标仓库（有 `--repo` 时只看这些仓库的 diff）拟定提交说明
-3. **push** — 带 `-m` 执行提交与推送
+3. **push** — 带 `-m` 执行同步、提交与推送；有未提交改动、且本地落后远程时，脚本会先 stash 本地改动，再 pull/rebase 远程提交，恢复改动后提交并 push
 
 ## 常用命令
 
@@ -98,12 +98,17 @@ DRY_RUN=1 ./tomako-dev-skills/scripts/push-all.sh push -m "..."
 
 脚本**不会**自动解决冲突。
 
-1. push 前若落后远程，会先 `pull --rebase`
+1. push 前若落后远程，会先 `fetch`，必要时 `stash` 未提交改动，再 `pull --rebase`
 2. rebase/merge 冲突时：
    - 列出**冲突文件完整路径**
-   - 该仓库跳过 push，继续处理其他仓库
-   - 明确告知用户：**人工解决冲突后，再次执行 `$push-all` 或 `$提交`**
-3. 用户解决冲突后，Agent 再次执行 status → push（可复用或更新提交说明）
+   - 该仓库停止 push，继续处理其他仓库
+   - 若本地未提交改动已 stash，脚本会提示 stash 仍保留，避免本地改动丢失
+3. stash pop 冲突时：
+   - 列出**冲突文件完整路径**
+   - 不自动提交、不 push；用户先人工解决冲突
+4. 本地未提交改动且无冲突时：
+   - 脚本按正常流程 `git add -A`、`git commit -m`、同步远程、`git push`
+5. 用户解决冲突后，Agent 再次执行 status → push（可复用或更新提交说明）
 
 冲突文件查看：
 
@@ -113,13 +118,13 @@ git -C <repo-path> diff --name-only --diff-filter=U
 
 ## 跳过条件
 
-- 工作区干净且无需 push → 跳过
+- 工作区干净且无需 push → 无需处理
 - 存在未解决冲突 → 失败并列出文件
-- 未设置 upstream → 跳过并提示 `git push -u`
+- 未设置 upstream → 脚本使用 `git push -u origin <branch>` 建立上游并推送
 
 ## 交付前答复要求
 
-- 各仓库：已提交 / 已 push / 跳过 / 失败
+- 各仓库：已提交 / 已 push / 无需处理 / 失败
 - 失败或冲突时列出**所有冲突文件路径**与建议下一步
 - 使用的提交说明原文
 
