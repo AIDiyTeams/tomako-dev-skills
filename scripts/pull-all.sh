@@ -16,6 +16,7 @@ tomako_dev_skills_resolve_paths "${SCRIPT_DIR}"
 FILTER_RAW="${REPO_FILTER:-}"
 REPO_FILTER=""
 AUTOSTASH="${AUTOSTASH:-1}"
+AUTO_INSTALL_DEV_SKILLS="${AUTO_INSTALL_DEV_SKILLS:-1}"
 REBASE="${REBASE:-1}"
 FAILED=0
 PULLED=0
@@ -39,12 +40,15 @@ usage() {
   -r, --repo NAME   只处理指定仓库（可重复）；别名见 push-all.sh --help
   --autostash       有未提交改动时自动 stash 再 pull，成功后 pop（默认）
   --no-autostash    有未提交改动时不自动 stash，直接失败并列出文件
+  --no-install       拉取 tomako-dev-skills 后不自动执行 install.sh
   --no-rebase    使用 merge 而非 rebase 拉取
   -h, --help
 
 环境变量:
   AUTOSTASH=1    等同 --autostash（默认）
   AUTOSTASH=0    等同 --no-autostash
+  AUTO_INSTALL_DEV_SKILLS=1  拉取 tomako-dev-skills 成功后自动执行 install.sh（默认）
+  AUTO_INSTALL_DEV_SKILLS=0  等同 --no-install
   REBASE=0       等同 --no-rebase
   REPO_FILTER=...  空格分隔的仓库名（等同多个 --repo）
 EOF
@@ -73,6 +77,7 @@ parse_args() {
         ;;
       --autostash) AUTOSTASH=1 ;;
       --no-autostash) AUTOSTASH=0 ;;
+      --no-install) AUTO_INSTALL_DEV_SKILLS=0 ;;
       --no-rebase) REBASE=0 ;;
       -h|--help) usage; exit 0 ;;
       *) error "未知参数: $1"; usage; exit 1 ;;
@@ -88,6 +93,30 @@ print_conflict_files_full() {
     [ -n "${file}" ] || continue
     printf '    %s/%s\n' "${path}" "${file}"
   done
+}
+
+run_dev_skills_install() {
+  local path="$1"
+  local install_script="${path}/install.sh"
+
+  if [ "${AUTO_INSTALL_DEV_SKILLS}" != "1" ]; then
+    info "已跳过 tomako-dev-skills/install.sh（AUTO_INSTALL_DEV_SKILLS=${AUTO_INSTALL_DEV_SKILLS}）"
+    return 0
+  fi
+
+  if [ ! -x "${install_script}" ]; then
+    error "tomako-dev-skills/install.sh 不存在或不可执行: ${install_script}"
+    return 1
+  fi
+
+  info "检测到 tomako-dev-skills 拉取成功，自动执行 install.sh..."
+  if "${install_script}"; then
+    info "tomako-dev-skills/install.sh 执行完成"
+    return 0
+  fi
+
+  error "tomako-dev-skills/install.sh 执行失败，请查看上方输出"
+  return 1
 }
 
 print_repo_status() {
@@ -120,6 +149,7 @@ do_pull_repo() {
   local name="$1"
   local path="$2"
   local branch pull_args=() stash_made=0 conflicts
+  local repo_failed=0
 
   repo_hdr "${name} (${path#${WORKSPACE_ROOT}/})"
 
@@ -168,6 +198,7 @@ do_pull_repo() {
       print_conflict_files_full "${path}"
     fi
     FAILED=$((FAILED + 1))
+    repo_failed=1
   fi
 
   if [ "${stash_made}" = "1" ]; then
@@ -181,6 +212,13 @@ do_pull_repo() {
       else
         warn "stash pop 失败，请手动 git stash list / git stash pop"
       fi
+      FAILED=$((FAILED + 1))
+      repo_failed=1
+    fi
+  fi
+
+  if [ "${name}" = "tomako-dev-skills" ] && [ "${repo_failed}" = "0" ]; then
+    if ! run_dev_skills_install "${path}"; then
       FAILED=$((FAILED + 1))
     fi
   fi
@@ -203,7 +241,7 @@ cmd_pull() {
   if [ -n "${REPO_FILTER// }" ]; then
     info "限定仓库: ${REPO_FILTER}"
   fi
-  info "模式: fetch + pull $([ "${REBASE}" = "1" ] && echo --rebase || echo --no-rebase), autostash=${AUTOSTASH}"
+  info "模式: fetch + pull $([ "${REBASE}" = "1" ] && echo --rebase || echo --no-rebase), autostash=${AUTOSTASH}, auto_install_dev_skills=${AUTO_INSTALL_DEV_SKILLS}"
   tomako_dev_skills_foreach_repo do_pull_repo
 
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

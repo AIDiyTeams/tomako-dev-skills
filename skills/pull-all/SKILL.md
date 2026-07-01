@@ -52,6 +52,7 @@ tomako-workspace/
 1. **cwd = tomako-workspace 根目录**
 2. 默认先 `status` 了解各仓库状态（可选）
 3. 执行 `pull` 拉取远程最新；有未提交改动时默认自动 stash → pull/rebase → stash pop，不把仓库标记为跳过
+4. 若本次处理的仓库包含 `tomako-dev-skills/`，且该仓库拉取成功且无冲突，脚本会自动执行 `./tomako-dev-skills/install.sh`，让新/更新后的 skills 立即挂载到 Agent 入口
 
 ## 常用命令
 
@@ -64,6 +65,12 @@ tomako-workspace/
 
 # 禁止自动 stash：遇到未提交改动时失败并列出文件
 AUTOSTASH=0 ./tomako-dev-skills/scripts/pull-all.sh pull
+
+# 只拉取 skills 仓库；成功后默认自动 install
+./tomako-dev-skills/scripts/pull-all.sh pull --repo tomako-dev-skills
+
+# 特殊场景禁止拉取后自动 install
+AUTO_INSTALL_DEV_SKILLS=0 ./tomako-dev-skills/scripts/pull-all.sh pull --repo tomako-dev-skills
 ```
 
 ## Agent 执行模板
@@ -77,16 +84,26 @@ AUTOSTASH=0 ./tomako-dev-skills/scripts/pull-all.sh pull
 
 默认流程已经会保护本地未提交改动并继续拉取；不要因为工作区 dirty 就跳过仓库。
 
+用户说「拉取 skills」「拉取 tomako-dev-skills」时：
+
+```bash
+./tomako-dev-skills/scripts/pull-all.sh status --repo tomako-dev-skills
+./tomako-dev-skills/scripts/pull-all.sh pull --repo tomako-dev-skills
+```
+
+第二步成功后会自动执行 `./tomako-dev-skills/install.sh`；Agent 不需要再单独补跑 install。
+
 ## 冲突与异常
 
 - **有未提交改动**：默认自动 stash，拉取后恢复；只有显式 `AUTOSTASH=0` 时才失败并列出文件
 - **pull/rebase 产生冲突**：脚本列出冲突文件完整路径，**不自动解决**；告知用户人工处理后重新执行 `$pull-all` 或 `$push-all`
 - **stash pop 产生冲突**：脚本列出冲突文件完整路径；告知用户先人工解决这些冲突，再执行 `$push-all` 提交
+- **tomako-dev-skills install 失败**：脚本标记失败并保留 `install.sh` 输出；通常是本地已有差异副本，需要用户迁移或删除后重试
 - **某仓库不存在**：自动跳过，不报错
 
 ## 交付前答复要求
 
-汇总每个仓库的结果：已更新 / 无需更新 / 失败，若有冲突列出完整文件路径。只有仓库不存在、无法识别分支等非业务处理场景才使用“跳过”。
+汇总每个仓库的结果：已更新 / 无需更新 / 已自动 install / 失败，若有冲突列出完整文件路径。只有仓库不存在、无法识别分支等非业务处理场景才使用“跳过”。
 
 ## 相关
 
