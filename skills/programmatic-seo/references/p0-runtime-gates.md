@@ -65,6 +65,31 @@ GET /api/skill-results/{taskId}
 
 如果结构化结果缺失，应继续等待、显示可恢复状态或展示分类错误，不得伪造结果。
 
+## 交互式生图工具
+
+产品海报、品牌物料、社媒宣传图、广告图、Product Hunt launch 图、OG 图、App 上架图等交互式生图工具，默认必须走云端 Agent + Skills-OL + Skill Result。
+
+标准链路：
+
+```text
+前端 POST /api/llm/tasks
+  -> Agent 读取 Skills-OL 对应 Skill
+  -> Skills-OL 脚本调用 /api/image/generate
+  -> 脚本 POST /api/skill-results
+  -> 前端 GET /api/skill-results/{taskId}
+  -> 前端展示 resultJson 中的 imageUrl / imageTaskId
+```
+
+禁止把以下链路作为最终公开工具实现：
+
+- 前端直接把表单拼成 prompt 后调用 `/api/image/generate`。
+- 前端生成 SVG、HTML、CSS、canvas 或模板海报后冒充“AI 生图”。
+- Agent 未写回 `skill-results` 时，用本地 fallback 图片、旧 task 图片或 demo 图当作成功结果。
+
+例外只适用于明确标注的内部 demo、低风险测试页或用户明确要求的本地模板工具。即使例外成立，也必须在页面和交付说明中写清楚不是 Agent-backed 生产链路。
+
+调试生图质量时，优先修改 Skills-OL 对应 Skill、脚本和 prompt strategy；前端只负责提交结构化 brief、展示异步状态、校验 `resultType/schema` 和渲染写回结果。
+
 ## 核心输出验收
 
 请求成功、task 创建成功、schema 能 parse、卡片能渲染，都不等于工具可用。
