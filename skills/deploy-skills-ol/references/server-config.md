@@ -13,16 +13,16 @@ ssh -i "$TOMAKO_SSH_KEY" root@8.210.246.124
 
 | 项 | 值 |
 | --- | --- |
-| Skills-OL 目录 | `/home/ubuntu/Skills-OL` |
-| git 操作用户 | `ubuntu` |
+| Skills-OL 目录 | `/home/root/Skills-OL` |
+| git 操作用户 | `root` |
 | systemd 服务 | `cc-connect` |
 | Bridge WebSocket | `:9810` |
 
 ## 部署流程（脚本自动执行）
 
 ```bash
-su - ubuntu -c 'cd ~/Skills-OL && git fetch && git pull origin main'
-su - ubuntu -c 'cd ~/Skills-OL && npm install'   # 有 package.json 时
+su - root -c 'cd ~/Skills-OL && git fetch && git pull origin main'
+su - root -c 'cd ~/Skills-OL && npm install'   # 有 package.json 时
 systemctl restart cc-connect
 ```
 
@@ -36,7 +36,7 @@ systemctl restart cc-connect
 
 | 现象 | 检查 |
 | --- | --- |
-| pull 失败 | 124 上 ubuntu 用户的 GitHub 部署密钥 / 仓库权限 |
+| pull 失败 | 124 上 root 用户的 GitHub 部署密钥 / 仓库权限 |
 | Agent 仍跑旧 skill | 是否 restart cc-connect；`deploy-skills-ol.sh status` 对比 commit |
 | npm install 失败 | Node 版本、网络；SSH 登录手动执行 |
 

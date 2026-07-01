@@ -32,7 +32,7 @@ description: Deploy Skills-OL to cc-connect server (git pull, npm install, resta
 | SSH 密钥 | `TOMAKO_SSH_KEY` |
 | 服务器 | `root@8.210.246.124:22` |
 | 远端目录 | `/home/ubuntu/Skills-OL` |
-| git 操作用户 | `ubuntu` |
+| git 操作用户 | `root` |
 | 分支 | `main` |
 | 服务 | `cc-connect` |
 
