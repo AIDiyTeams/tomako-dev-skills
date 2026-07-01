@@ -1,6 +1,6 @@
 ---
 name: push-all
-description: Commit and push local changes across Tomako workspace git repos (all or selected via --repo). Reports conflict files for manual resolution. Use when the user invokes $push-all, $提交, asks to commit/push all or specific repos (e.g. only Tomako).
+description: Commit and push local changes across Tomako workspace git repos (all or selected via --repo). Reports conflict files for manual resolution. Use when the user invokes $push-all, $提交, asks to commit/push all or specific repos (e.g. only Tomako-FE).
 ---
 
 # Tomako 全仓库提交推送 Skill
@@ -25,7 +25,7 @@ cd /path/to/tomako-workspace
 
 | 仓库 | `--repo` 取值 | 别名 |
 | --- | --- | --- |
-| 前端 | `Tomako` | `tomako`, `frontend` |
+| 前端 | `Tomako-FE` | `tomako`, `frontend` |
 | 后端 | `Tomako-portal` / `cibos-portal` | `portal`, `backend` |
 | Skills-OL | `Skills-OL` | `skills-ol` |
 | 本仓库 | `tomako-dev-skills` | `dev-skills` |
@@ -33,16 +33,16 @@ cd /path/to/tomako-workspace
 
 ```bash
 # 只提交前端
-./tomako-dev-skills/scripts/push-all.sh push --repo Tomako -m "feat: ..."
+./tomako-dev-skills/scripts/push-all.sh push --repo Tomako-FE -m "feat: ..."
 
 # 只提交个人 fork / 实验仓库
-./tomako-dev-skills/scripts/push-all.sh push --repo Tomako2 -m "wip: ..."
+./tomako-dev-skills/scripts/push-all.sh push --repo Tomako-FE -m "wip: ..."
 
 # 只提交 skills 仓库 + 前端
 ./tomako-dev-skills/scripts/push-all.sh push --repo dev-skills --repo frontend -m "..."
 ```
 
-用户说「只提交 Tomako」「提交前端」「$提交 tomako-dev-skills」时，Agent 应加上对应的 `--repo`。
+用户说「只提交 Tomako-FE」「提交前端」「$提交 tomako-dev-skills」时，Agent 应加上对应的 `--repo`。
 
 ## 执行协议
 
@@ -62,7 +62,7 @@ cd /path/to/tomako-workspace
 ./tomako-dev-skills/scripts/push-all.sh push -m "feat: 描述本次改动"
 
 # 2b. 只提交指定仓库
-./tomako-dev-skills/scripts/push-all.sh push --repo Tomako -m "feat: 前端改动"
+./tomako-dev-skills/scripts/push-all.sh push --repo Tomako-FE -m "feat: 前端改动"
 
 # 或环境变量
 COMMIT_MSG="fix: 修复 xxx" ./tomako-dev-skills/scripts/push-all.sh push
@@ -86,12 +86,12 @@ DRY_RUN=1 ./tomako-dev-skills/scripts/push-all.sh push -m "..."
 ./tomako-dev-skills/scripts/push-all.sh push -m "<根据改动拟定的提交说明>"
 ```
 
-用户说「只提交 Tomako」或指定仓库名时：
+用户说「只提交前端」或指定仓库名时：
 
 ```bash
-./tomako-dev-skills/scripts/push-all.sh status --repo Tomako
-# 分析 Tomako 目录 git diff
-./tomako-dev-skills/scripts/push-all.sh push --repo Tomako -m "<针对该仓库的提交说明>"
+./tomako-dev-skills/scripts/push-all.sh status --repo Tomako-FE
+# 分析 Tomako 前端目录 git diff
+./tomako-dev-skills/scripts/push-all.sh push --repo Tomako-FE -m "<针对该仓库的提交说明>"
 ```
 
 ## 冲突处理（重要）

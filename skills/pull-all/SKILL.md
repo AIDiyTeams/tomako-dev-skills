@@ -18,7 +18,7 @@ cd /path/to/tomako-workspace
 
 ```text
 tomako-workspace/
-├── Tomako/
+├── Tomako-FE/
 ├── Tomako-portal/
 ├── Skills-OL/
 ├── tomako-dev-skills/
@@ -30,7 +30,7 @@ tomako-workspace/
 只拉个别仓库时用 `--repo`（别名同 [push-all](../push-all/SKILL.md)：`frontend`、`portal`、`dev-skills` 等）：
 
 ```bash
-./tomako-dev-skills/scripts/pull-all.sh pull --repo Tomako
+./tomako-dev-skills/scripts/pull-all.sh pull --repo Tomako-FE
 ./tomako-dev-skills/scripts/pull-all.sh pull --repo portal
 ```
 
@@ -40,12 +40,12 @@ tomako-workspace/
 
 | 目录 | 说明 |
 | --- | --- |
-| `Tomako/` | 前端 |
+| `Tomako-FE/` | 前端 |
 | `Tomako-portal/` 或 `cibos-portal/` | 后端（二选一） |
 | `Skills-OL/` | 在线 Skills |
 | `tomako-dev-skills/` | 本 skills 仓库 |
 
-目录名不同时用 `LOCAL_FRONTEND_DIR` 等覆盖。若需把 `Tomako2`、`cc-connect` 等纳入**默认全量**拉取，设置 `EXTRA_GIT_REPOS="Tomako2 cc-connect"`。
+目录名不同时用 `LOCAL_FRONTEND_DIR` 等覆盖。若需把`cc-connect` 等纳入**默认全量**拉取，设置 `EXTRA_GIT_REPOS="cc-connect"`。
 
 ## 执行协议
 
