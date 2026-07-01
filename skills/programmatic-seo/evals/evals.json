@@ -299,6 +299,90 @@
         "Does not accept lint/build/dry-run/schema/mock as proof of production testability"
       ],
       "files": []
+    },
+    {
+      "id": 23,
+      "prompt": "Build a new SEO tool page for an email template generator. DataForSEO credentials are available, so just query a big list of 80 possible keywords and then write the page.",
+      "expected_output": "Should reject querying a large undifferentiated keyword list before understanding the task. The agent should first summarize the tool name, target users, task goal, user inputs, expected results, target locale/market, and assumptions back into the conversation. Then it should generate a keyword candidate table with search intent, why users may search it, fit, risk, and first-round query decision. Only after that should it query DataForSEO for the high-confidence keywords justified by the case, staying within the CLI hard cap and avoiding paid API calls when the requirement is still vague. It should inspect search volume/CPC/paid competition/SERP Top 10 and decide whether expansion is needed. The final Keyword Evidence Brief must be shown in the conversation before writing copy and page modules.",
+      "assertions": [
+        "Does not query a large undifferentiated keyword list upfront",
+        "Returns the requirement summary to the conversation first",
+        "Returns a keyword candidate table before DataForSEO calls",
+        "Chooses DataForSEO query count from the actual case and stays within the CLI hard cap",
+        "Uses DataForSEO results and SERP intent to decide whether to expand",
+        "Returns a final Keyword Evidence Brief before copywriting and page generation"
+      ],
+      "files": []
+    },
+    {
+      "id": 24,
+      "prompt": "Improve the copy of an existing Tomako tool page so it better matches user search terms and has data support. There is already a docs/seo-keyword-briefs slug file, but my local machine has no DataForSEO credentials.",
+      "expected_output": "Should treat this as a programmatic-seo content task, not a pure UI task. The agent should read the existing page copy, ToolSpec/i18n where relevant, and the existing SEO keyword brief before editing. It should not rerun DataForSEO or create a new scaffold brief just because credentials are missing. It should return the requirement summary, keyword candidate/brief summary, and current page copy gaps: keyword gap, user value gap, doubt/FAQ coverage gap, and modules to delete or downgrade. Then it should revise H1/title/description/intro/H2/FAQ/modules based on the existing brief and user needs. If no usable brief exists and credentials are missing, it should state that live keyword evidence is unavailable and avoid treating scaffold output as final evidence.",
+      "assertions": [
+        "Uses programmatic-seo for existing page copy calibration",
+        "Reads and reuses existing docs/seo-keyword-briefs before querying DataForSEO",
+        "Does not create or commit scaffold as final keyword evidence when credentials are missing",
+        "Returns keyword gap, user value gap, doubt coverage gap, and invalid module diagnosis",
+        "Updates copy from keyword evidence and user needs before UI changes",
+        "States live keyword evidence is unavailable when no usable brief and no credentials exist"
+      ],
+      "files": []
+    },
+    {
+      "id": 25,
+      "prompt": "A Tool page Hero uses a full-bleed generated background, but the main product document stack sits behind the left H1 and intro. Some important labels and result details are partly hidden by the localized text. The agent suggests making the whole image simpler and smaller.",
+      "expected_output": "Should flag this as a Hero asset/layout issue. The correct fix is not simply shrinking or over-simplifying the image. The Hero background should keep communicating what users get from the product, but place the main visual subject on the right side and reserve a clean left-side safe area for localized HTML H1, intro, and CTA. Important objects, readable labels, result cards, arrows, and focal details must not sit under the text overlay. Optional left-side decoration can be used only as subtle texture or small atmospheric accents, positioned away from text and never competing with the H1. Desktop and mobile crops/object-position must be checked so the subject remains right-weighted and text remains legible.",
+      "assertions": [
+        "Rejects shrinking or over-simplifying the whole Hero image as the primary fix",
+        "Requires the main Hero visual subject to be right-weighted",
+        "Requires a clean left-side safe area for localized H1, intro, and CTA",
+        "Rejects important labels, result cards, arrows, or focal details under text overlay",
+        "Allows left-side decoration only when subtle, non-overlapping, and non-focal",
+        "Requires desktop and mobile crop/object-position checks"
+      ],
+      "files": []
+    },
+    {
+      "id": 26,
+      "prompt": "Create a new SEO content page about Product Hunt launch checklist. It is just an article, no interactive tool. Please write it and add it to Tomako.",
+      "expected_output": "Should route this as a Content Page, not a Tool Page. It should establish the reading-state table and read p0-page-brief.md, p0-content-gates.md, p0-content-page-brief.md, p0-content-page-structure-gates.md, p0-content-page-writing-gates.md, project-map.md, content-page-implementation.md, and p0-launch-checklist.md. It should return a content brief with reader, intent, page type, content promise, unique information gain, cluster role, internal links, and CTA. It should decide whether the page belongs in content/blog, content/template, or content/mcp, then create/update MDX with required frontmatter, zh/en slug rules, public image paths when used, and internal links without locale prefixes. It should not create a per-page route or ToolSpec widget.",
+      "assertions": [
+        "Routes an article-only request to the Content Page path",
+        "Reads the content-page-specific Gate files",
+        "Returns reader, intent, page type, promise, unique information gain, cluster role, internal links, and CTA",
+        "Chooses the correct content/{kind}/{locale}/{slug}.mdx implementation path",
+        "Requires required MDX frontmatter and zh/en slug handling",
+        "Rejects creating a ToolSpec widget or per-page route for normal content pages"
+      ],
+      "files": []
+    },
+    {
+      "id": 27,
+      "prompt": "Let's publish 200 blog posts by swapping the keyword in one template, each targeting a different startup marketing term. We can add links later.",
+      "expected_output": "Should reject this as thin/doorway content risk. It should require topic cluster planning before writing, with hub/cluster roles, one page per distinct search intent, unique information gain for each page, user value, internal links, and a product/tool/template CTA. It should recommend batching with sample review, DataForSEO or other evidence for prioritized clusters, and noindex or hold pages that do not pass the standalone value test. It should not proceed to mass-generate isolated MDX files.",
+      "assertions": [
+        "Rejects keyword-swap template pages as thin/doorway risk",
+        "Requires topic cluster planning before generation",
+        "Requires distinct search intent and unique information gain per page",
+        "Requires internal links and Tomako CTA before publishing",
+        "Recommends batch launch and sample review",
+        "Does not mass-generate isolated MDX files"
+      ],
+      "files": []
+    },
+    {
+      "id": 28,
+      "prompt": "Improve an existing Tomako blog post so the copy better matches search terms and user needs. We have no DataForSEO credentials on this machine, but there may be an existing keyword brief.",
+      "expected_output": "Should treat this as content-page copy calibration. It should read the existing MDX, p0-content-gates.md, p0-content-page-writing-gates.md, content-page-implementation.md, and any existing docs/seo-keyword-briefs/{slug}.md/.json before editing. It should not create a scaffold brief as final evidence when credentials are missing. It should return a gap diagnosis: keyword gap, user intent gap, information gain gap, trust/source gap, internal-link gap, and CTA gap. Then it should revise title, description, intro, H2s, body, FAQ, and internal links according to available evidence and clearly state live keyword data limitations.",
+      "assertions": [
+        "Routes existing blog copy work to content-page copy calibration",
+        "Reads the current MDX and existing keyword brief before editing",
+        "Does not treat no-key scaffold output as final evidence",
+        "Returns keyword, intent, information gain, trust/source, internal-link, and CTA gaps",
+        "Updates frontmatter/body/FAQ/internal links from evidence and user needs",
+        "States limitations when live keyword data is unavailable"
+      ],
+      "files": []
     }
   ]
 }

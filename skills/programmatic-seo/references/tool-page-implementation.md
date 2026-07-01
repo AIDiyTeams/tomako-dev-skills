@@ -108,6 +108,29 @@ Container 负责页面组合：
 - 不重复写 route-level metadata。
 - 不在 TSX 里硬编码中英双语正文。
 
+## 页面模块复用与自定义判断
+
+Tool 页面不是每次从零写所有 section。先完成 `p0-content-gates.md` 的信息模块清单，再为每个模块做复用决策。
+
+当前优先复用：
+
+- `src/features/tools/shared/tool-page-shell.tsx`：页面外壳、导航、Hero、JSON-LD。
+- `src/features/tools/shared/tool-guide-section.tsx`：工作台区、图文区、图片视觉。
+- `src/features/tools/shared/tool-content-sections.tsx`：价值、好标准、适用场景、边界、FAQ、对比、卡片网格等常见正文模块。
+- `src/features/tools/shared/tool-cta.tsx`：底部 CTA。
+- `@/components/ui`：表单、按钮、下拉、弹层、tab、checkbox、radio 等基础控件。
+
+决策规则：
+
+- 共享模块能准确承载当前信息、视觉上限足够、不会制造重复表达时，优先复用。
+- 共享模块只差轻微文案、顺序、图片或 children 组合时，使用组合方式解决，不复制一份本地组件。
+- 共享模块会迫使页面变成错误结构时，必须自定义。例如：左右两侧重复讲同一件事、结果区被压窄、价值模块变成流程说明、表单被迫复杂、视觉图无法表达当前场景。
+- 自定义开发不是例外失败，而是正常选项。先在当前 container/widget 内实现；如果同类结构在两个以上页面稳定复现，再抽成共享组件。
+- 不要从另一个 Tool container 复制局部 section 后只改名字。要么引用共享模块，要么基于当前信息架构重新写清楚。
+- 交付说明中写明：复用了哪些共享模块，哪些模块自定义，为什么没有复用模板库。
+
+模板库的目标是提高效率和一致性，不是限制页面上限。最终判断以用户价值、疑问覆盖、交互可用性和视觉效果为准。
+
 ## Widget
 
 用户可以输入、生成、检查、复制、下载、提交时使用 widget。
@@ -124,6 +147,7 @@ Container 负责页面组合：
 - 使用 `@/components/ui` 控件。
 - 表单 UI 遵守 `p0-ui-gates.md`。
 - Agent-backed 结果遵守 `p0-runtime-gates.md`。
+- 表单、横向选择器、图片、结果卡和两栏布局必须有明确边界约束。grid/flex 子项按需加 `min-w-0`，控件和卡片加 `max-w-full`，横向轨道只能在自身容器内 `overflow-x-auto`，不能撑破页面或覆盖相邻字段。
 
 避免：
 
@@ -133,6 +157,8 @@ Container 负责页面组合：
 - 表单里每个字段都堆 helper 和 icon。
 - raw `<select>`、checkbox、radio、tab、button、menu。
 - 大量标签墙。
+- 超宽风格/Type/模板选择器直接撑出表单列。
+- 右侧视觉、图片或 absolute 装饰覆盖左侧输入控件。
 - 复杂表单居中撑满。
 - 结果放在表单同一个卡片背景里。
 - icon-led 短生成按钮。
@@ -203,6 +229,17 @@ Handler 规则：
 
 具体运行时要求看 `p0-runtime-gates.md`。
 
+只要本轮修改了 `Skills-OL/` 对应功能的 Agent Skill、脚本、prompt、resultType、schema 或写回字段，完成代码修改后的默认下一步就是执行 `$deploy-skills-ol` 部署闭环。无法自动部署时，必须主动询问用户是否部署或标为 blocker，不能继续用云端旧 Agent 结果判断新逻辑。
+
+长报告 / 渐进式 Agent Tool 额外检查：
+
+- 新增或改名 LLM task service 后，如果前端从 `@/services/llm-task` barrel import，必须同步更新 `src/services/llm-task/index.ts`。
+- schema 要能区分 partial/final；normalizer 能接受 partial 缺省字段，final 再做完整字段要求。
+- 结果组件支持 `completedSections`、`inProgressSection` 或等价字段，并按用户可见模块渲染。
+- partial/final 的 `resultType`、slug、scene、Skill script 不与旧工具误复用；如需迁移，保留兼容并写清风险。
+- Skills-OL 脚本尽量校验 partial 顺序、一次新增粒度和 schema，不只依赖 prompt。
+- 完成前至少运行 `pnpm exec tsc --noEmit --pretty false`；不要只依赖浏览器热更新、局部 lint 或 mock 渲染。
+
 ## 当前可参考案例
 
 - `gtm-readiness-checklist`：ToolSpec + container + widget + MCP 的较完整样例。
@@ -225,3 +262,11 @@ Handler 规则：
 - sample/demo 数据进入生产结果。
 - 请求 200、schema 有效、mock 渲染就宣称修复。
 - repeated failure 时继续 UI 打磨，不查 runtime 链路。
+- 每个 Tool 页面都重复手写 FAQ、场景、边界、价值卡片等通用 section，而不是先评估共享模块。
+- 为了套共享模块保留无价值、重复或关系不清的 section。
+- 没有检查 `document.documentElement.scrollWidth > document.documentElement.clientWidth`，导致桌面或移动端出现意外横向滚动。
+- 横向选择器只写“可左右滑动”，但没有把滚动限制在内部轨道。
+- 新增 LLM task service 后忘记从 `src/services/llm-task/index.ts` 导出，导致构建或运行时引用失败。
+- 渐进式结果只在 prompt 里要求，没有在 schema、normalizer、UI 状态机和 Skills-OL 脚本里形成闭环。
+- partial 已经出现后，final 超时或 SSE 抖动把整页切成失败并清空已完成内容。
+- 只跑 dev server 或页面点击通过，没有运行 `tsc --noEmit`，遗漏 import/export 或类型问题。

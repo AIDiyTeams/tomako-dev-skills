@@ -13,6 +13,8 @@ SKILL_TARGET_DIRS=(
   ".agents/skills"
   "Tomako/.codex/skills"
   "Tomako/.agents/skills"
+  "Tomako-FE/.codex/skills"
+  "Tomako-FE/.agents/skills"
 )
 
 DEV_SKILLS_TARGET_DIRS=(
@@ -84,9 +86,14 @@ count_install_tasks() {
   local rel_dir base_dir target_dir skill_path skill_name n=0
 
   for rel_dir in "${SKILL_TARGET_DIRS[@]}"; do
-    if [[ "${rel_dir}" == Tomako/* ]] && [ ! -d "${WORKSPACE_ROOT}/Tomako" ]; then
-      continue
-    fi
+    case "${rel_dir}" in
+      Tomako/*)
+        [ -d "${WORKSPACE_ROOT}/Tomako" ] || continue
+        ;;
+      Tomako-FE/*)
+        [ -d "${WORKSPACE_ROOT}/Tomako-FE" ] || continue
+        ;;
+    esac
     for skill_path in "${SKILLS_SRC_DIR}"/*; do
       [ -d "${skill_path}" ] || continue
       [ -f "${skill_path}/SKILL.md" ] || continue
@@ -234,9 +241,14 @@ install_skills_under() {
   local rel_dir="$2"
   local target_dir="${base_dir}/${rel_dir}"
 
-  if [[ "${rel_dir}" == Tomako/* ]] && [ ! -d "${WORKSPACE_ROOT}/Tomako" ]; then
-    return 0
-  fi
+  case "${rel_dir}" in
+    Tomako/*)
+      [ -d "${WORKSPACE_ROOT}/Tomako" ] || return 0
+      ;;
+    Tomako-FE/*)
+      [ -d "${WORKSPACE_ROOT}/Tomako-FE" ] || return 0
+      ;;
+  esac
 
   ensure_skills_parent_dir "${target_dir}"
 

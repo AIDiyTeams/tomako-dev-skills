@@ -92,6 +92,29 @@ GET /api/skill-results/{taskId}
 
 调试生图质量时，优先修改 Skills-OL 对应 Skill、脚本和 prompt strategy；前端只负责提交结构化 brief、展示异步状态、校验 `resultType/schema` 和渲染写回结果。
 
+## 长报告渐进式 Skill Result
+
+当 Agent-backed Tool 会输出长报告、多个可见分析模块、分阶段清单或较长策略文档时，必须评估是否采用渐进式 Skill Result，而不是让用户一直等待 final result。
+
+适用判断：
+
+- 结果天然由多个用户可见模块组成，例如摘要、证据、机会、建议、风险、来源、下一步。
+- 单次生成时间较长，用户在 10 到 20 秒内看不到任何真实内容会明显降低信任。
+- 模块之间有稳定阅读顺序，前几个模块可以先给用户带来价值。
+
+P0 规则：
+
+- `resultJson` 应能显式区分 `partial` 和 `final`，例如 `reportStatus: "partial" | "final"`。
+- partial result 使用累计快照，不使用需要前端复杂合并的 delta patch。
+- partial schema 应允许未完成模块缺省；final schema 再要求完整字段。
+- 前端在 task 运行中必须继续轮询 `GET /api/skill-results/{taskId}`，不能只等 SSE final 信号。
+- 一旦看到有效 partial，前端必须保留已完成内容；final 暂时未到、读取超时或 SSE 抖动不能把页面切成整页失败。
+- `completedSections`、`inProgressSection` 或等价字段应反映用户可见模块，不是后端内部 JSON 字段。
+- Agent prompt 不是唯一约束。Skills-OL 脚本应尽量校验 partial 的模块顺序、一次新增粒度和 schema；违反渐进契约时 fail fast。
+- 可见模块的发布顺序应尽量和前端展示顺序一致；内部可以并发分析，但写回层要按用户能理解的顺序发布。
+
+如果不采用渐进式输出，必须能说明原因，例如结果很短、生成很快、模块不可独立展示，或当前后端/Skill Result 能力确实不支持。
+
 ## 核心输出验收
 
 请求成功、task 创建成功、schema 能 parse、卡片能渲染，都不等于工具可用。
@@ -138,6 +161,30 @@ Agent 生成类工具必须验证：
 ## 生产部署闭环
 
 Agent-backed 工具不是“代码写完即可测试”。只要变更涉及前端 LLM task service、后端接口/状态机、Skills-OL Skill、Skills-OL 脚本、resultType、schema、cc-connect 运行目录或环境变量，就必须判断远端部署状态。
+
+### Skills-OL 修改后强制部署
+
+这是超强 P0 规则：修改 Agent Skill 后不部署，就等于没有修改云端 Agent。
+
+触发条件：
+
+- 修改 `Skills-OL/skills/**/SKILL.md`。
+- 修改 `Skills-OL/*.mjs` 或任何被在线 Agent 调用的脚本。
+- 修改 prompt strategy、参数、依赖、result writer、resultType、schema、写回字段或图片生成编排。
+- 修改某个 Tool 对应的在线 Skill 说明、候选生成、筛选、校验、写回或 dry-run 逻辑。
+
+强制动作：
+
+- 修改完成后，默认立即进入 `$deploy-skills-ol` / `deploy-skills-ol` 流程，把变更部署到 cc-connect 运行环境。
+- 如果部署脚本要求先 push 到 Git，必须确认 Skills-OL 变更已 push；未 push 时不能认为远端会生效。
+- 部署必须记录本地 commit、远端 commit、是否执行 npm install、是否重启 cc-connect、服务状态和部署报告。
+- 部署后至少跑一次真实链路 QA：前端提交 -> 云端 Agent 使用新 Skill -> Skill Result 写回 -> 前端读取并渲染。
+
+不能自动部署时：
+
+- 如果缺 SSH key、部署权限、Git push 权限、发布窗口、服务器信息或存在生产风险，必须主动询问用户是否需要部署或是否授权继续。
+- 如果用户暂不部署，必须把“Skills-OL 未部署，云端 Agent 仍可能运行旧版本”写成 blocker。
+- 未完成部署闭环时，禁止继续用云端测试结果判断新 Skill 是否生效，禁止宣称 Agent 效果已修复、页面可测试或功能完成。
 
 P0 规则：
 
@@ -193,7 +240,9 @@ P0 规则：
 idle
 submitting
 streaming / waiting
+partial
 awaiting_result
+awaiting_final
 done
 failed
 ```
@@ -207,6 +256,7 @@ failed
 - `result_schema_invalid`
 - `agent_writeback_failed`
 - `content_not_input_derived`
+- `partial_degraded`
 
 用户文案可以简化，但开发诊断必须区分层级。
 
@@ -313,9 +363,11 @@ POST /api/llm/tasks/{taskId}/messages
 - [ ] 两个不同有效输入通过变化验收。
 - [ ] placeholder 输入在提交前被拦截。
 - [ ] 异步状态容忍 `AWAITING_INPUT`、短暂 404 和 SSE error。
+- [ ] 长报告或多模块工具已评估 progressive partial result；若采用，partial/final schema、累计快照、模块顺序和前端保留 partial 均已验证。
 - [ ] 错误按层分类。
 - [ ] 代理目标已确认。
 - [ ] Skills-OL 写回脚本已验证。
 - [ ] 写回地址使用 HTTPS 规范域名，没有 http IP、301/302 跳转、方法改写或 body 丢失风险。
+- [ ] 如本轮修改了 `Skills-OL/` Agent Skill 或脚本，已自动执行 `$deploy-skills-ol` 部署闭环；若无法部署，已主动询问用户或标为 blocker。
 - [ ] 已完成一次真实 live QA：submit -> Agent/Skills-OL writeback -> fetch `/api/skill-results/{taskId}` -> 前端渲染。lint、build、dry-run、schema 校验不能替代这一步。
 - [ ] 远端部署闭环已完成：前端、后端、Skills-OL、cc-connect 的目标版本和重启状态已确认；若未完成，已标为 blocker，不能宣称可测试或完成。

@@ -95,6 +95,15 @@ Hero 配图要求：
 - 能让用户感受到“这个页面是做什么的，我能从中得到什么”。
 - 不要把 Hero 做成左右分栏的标题 + 卡片，不要用阅读时间、工具分类、更新时间、关键词标签占据 Hero 视觉。
 
+Hero 构图安全区要求：
+
+- 主视觉主体默认放在画面右侧，优先占据右侧约 55% 到 70% 的区域；不要把最重要的物件、标签或结果放到左侧文字覆盖区。
+- 左侧必须预留干净的文字安全区，能承载本地化 H1、intro 和 CTA。安全区可以有很淡的纹理或远景元素，但不能有高对比主体、可读标签、重要图形或复杂线条。
+- 如果 Hero 使用 `object-position`、裁切或响应式背景，桌面和移动端都要检查：文字不遮挡主视觉，主视觉也不压住文字。
+- 简化图片的目标是降低干扰，不是把有价值的视觉结果删没。若通过右移主视觉和预留安全区已经解决遮挡，可以保留适度丰富的结果物件和专业感细节。
+- 左侧可以加入少量有质感的装饰，例如淡纹理、微弱文件边缘、轻量线稿、柔和光影或小型场景碎片，用来提升氛围；这些装饰必须避开文字，不能与 H1、intro、CTA 重叠。
+- 不要在左侧文字区放英文标签、流程箭头、结果卡、主体物件、强色块或视觉焦点。
+
 工作台右侧图要求：
 
 - 这是左侧表单旁边的转化型视觉，不是正文说明配图。
@@ -121,6 +130,40 @@ Hero 配图要求：
 - 已有真实产品截图且质量足够。
 
 已有真实产品截图不能替代 Hero 背景图，除非它本身已经是高质量、低信息密度、可铺满 Hero 的视觉资产。
+
+## 内容页视觉物料
+
+内容页不机械套用 Tool 页“5 张图”规则，但也不能因为使用 MDX 就没有视觉系统。内容页的图片数量由页面类型、商业价值和内容长度决定。
+
+默认建议：
+
+- 普通 cluster article：产品化 Content Shell 必须存在；需要原创图时使用 1 张 Hero / 主题图 + 1 到 2 张正文图。
+- Hub / pillar / comparison / template / 高商业意图页面：通常使用 1 张 Hero 图 + 2 到 4 张正文图。
+- FAQ / troubleshooting / 短解释页：可以少图，但必须保留产品化 Hero 外壳、CTA、相关工具和清晰边界。
+
+内容页图片角色：
+
+1. **Hero / 主题图**：帮助用户在首屏感知主题、场景和 Tomako 产品关系。
+2. **框架图**：把判断标准、决策路径、清单或分类可视化。
+3. **场景图**：展示目标用户正在完成任务，例如开发者准备上线、创始人整理合规材料、团队检查发布清单。
+4. **结果承接图**：展示读完后可以进入的 Tomako 工具、模板或工作流结果。
+5. **边界图**：用于法律、隐私、平台规则、失败原因等高风险内容，帮助用户理解限制和下一步。
+
+内容页图片必须：
+
+- 服务某个具体 H2、判断标准、示例、CTA 或用户疑问。
+- 和正文互补，不复读正文。
+- 不承载 SEO 关键内容，关键内容仍写在 HTML 文本里。
+- 用场景化、实物化、before/after、框架或结果承接表达价值。
+- 图片内部如果有文字，只用 1 到 3 个英文短标签。
+
+内容页图片不要：
+
+- 用普通 dashboard、UI 截图或流程编号图替代专业视觉。
+- 为凑数量硬加无意义装饰图。
+- 每篇复制同一构图，只换标题。
+- 把工具页工作台右侧图规则硬套到纯内容页。
+- 让图片成为唯一的“模板”或“清单”载体；可复制内容必须在正文中。
 
 ## 工作台右侧图
 
@@ -274,8 +317,10 @@ Hero 背景图额外加入：
 Hero visual: transparent-background PNG for a website hero section.
 The page hero section background color is #F7F6F2; do not bake a colored rectangle, canvas, or backdrop into the image.
 The visual will be placed inside a 1200px-wide frame, aligned to the right with object-contain object-right.
-Leave clean negative space for localized HTML H1 and intro overlay.
-The image itself should still communicate the tool's function and user value at a glance.
+Place the main visual subject on the right side, occupying roughly the right 55-70% of the canvas.
+Leave a clean left-side safe area for localized HTML H1, intro, and CTA overlay.
+The left safe area may include subtle texture or tiny atmospheric accents, but no important objects, readable labels, arrows, result cards, or focal elements.
+The image itself should still communicate the tool's function and user value at a glance through the right-side subject.
 No large text blocks, no UI dashboard, no card-in-card frame.
 No solid background fill, no separate right-side color block.
 Any text inside the image must be English only.
@@ -297,6 +342,9 @@ No frontend UI diagram, no field list, no process chart, no dense cards.
 
 ```text
 public/tools/{slug}-{section}.png
+public/content/blog/{slug}-{section}.png
+public/content/template/{slug}-{section}.png
+public/content/mcp/{slug}-{section}.png
 ```
 
 推荐命名：
@@ -307,6 +355,9 @@ public/tools/{slug}-workspace.png
 public/tools/{slug}-value.png
 public/tools/{slug}-support.png
 public/tools/{slug}-use-case.png
+public/content/blog/{slug}-hero.png
+public/content/blog/{slug}-framework.png
+public/content/blog/{slug}-next-step.png
 ```
 
 引用规则：
@@ -329,6 +380,9 @@ public/tools/{slug}-use-case.png
 - [ ] Hero 配图在 1200px 容器范围内居右，使用 `object-contain object-right`，没有被 `object-cover` 放大或裁切。
 - [ ] Hero 配图支持 H1 / intro 作为 HTML 文本覆盖。
 - [ ] Hero 配图本身能点题，能让用户识别功能和价值，不是抽象装饰。
+- [ ] 内容页图片数量按页面类型决定；普通 cluster article 不强行凑 5 张，但必须有产品化 Content Shell，需要图片时至少服务具体段落或 CTA。
+- [ ] Hero 主视觉主体位于右侧，左侧文字安全区干净，H1 / intro / CTA 没有遮挡重要物件、标签或结果。
+- [ ] Hero 左侧如有装饰，只是轻量氛围元素，没有和文字重叠，也没有形成新的视觉焦点。
 - [ ] 工作台右侧图能让用户感到简单输入即可得到精美结果，不是前端代码画的结构图或流程图。
 - [ ] 3 张正文配图分别服务具体段落或模块，构图和表达目标不重复。
 - [ ] 核心视觉物料来自生图模型生成的 bitmap 图片，不是前端代码、SVG、CSS 卡片或 `ToolGuideVisual`。

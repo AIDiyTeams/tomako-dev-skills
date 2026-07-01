@@ -11,10 +11,13 @@ description: Deploy Skills-OL to cc-connect server (git pull, npm install, resta
 
 ## 何时使用
 
-程序化 SEO / Agent-backed 工具开发中，改了 `Skills-OL/` 并已 **push 到 GitHub** 后：
+程序化 SEO / Agent-backed 工具开发中，只要改了 `Skills-OL/` 中对应功能的在线 Agent Skill、脚本、prompt strategy、resultType、schema、写回字段或生图编排，就必须进入本部署 Skill。不要等用户再次提醒。
+
+改了 `Skills-OL/` 并已 **push 到 GitHub** 后：
 
 - Git push **≠** 124 上 Agent 已更新
 - 需要本 skill 在服务器执行 `git pull` +（按需）`npm install` + `restart cc-connect`
+- 如果未 push，部署不会包含本地改动；必须先 push，或把“未部署 / 未 push”标为 blocker 并询问用户是否继续
 
 与 `$deploy-frontend` 对称：前者管 168 前端，本 skill 管 124 Agent 运行时。
 
@@ -62,7 +65,7 @@ export TOMAKO_SSH_KEY=~/.ssh/github_deploy_key
 
 ## Agent 执行模板
 
-用户说 `$deploy-skills-ol` 或程序化 SEO 开发完成 Skills-OL 改动时：
+用户说 `$deploy-skills-ol`，或程序化 SEO 开发中刚修改完 Skills-OL Agent Skill / 脚本时：
 
 ```bash
 ./tomako-dev-skills/scripts/deploy-skills-ol.sh status
@@ -70,6 +73,8 @@ export TOMAKO_SSH_KEY=~/.ssh/github_deploy_key
 ```
 
 若 `preflight` 报未 push：先 `$提交 --repo Skills-OL`，再执行 `full`。
+
+如果因为 SSH key、部署权限、Git push、发布窗口或生产风险无法自动部署，必须主动询问用户是否部署或是否授权继续；不能继续用云端 Agent 测试结果判断本地新 Skill 是否生效。
 
 ## 交付前答复要求
 

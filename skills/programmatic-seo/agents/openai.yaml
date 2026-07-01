@@ -1,4 +1,4 @@
 interface:
   display_name: "程序化 SEO Skill"
-  short_description: "用于搭建、复盘和上线 Tomako 程序化 SEO 工具页面"
-  default_prompt: "请使用 $programmatic-seo，先建立阅读状态表，完整读取相关 Gate，再确认需求、输入输出、运行时、UI、物料、文案和上线验收。"
+  short_description: "搭建、复盘和上线 Tomako SEO 工具页与内容页"
+  default_prompt: "请使用 $programmatic-seo，先建立阅读状态表，判断 Tool Page 或 Content Page 路线，再读取对应 Gate 并完成关键词、文案、实现和上线验收。"

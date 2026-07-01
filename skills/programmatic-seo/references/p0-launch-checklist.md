@@ -20,6 +20,13 @@
 - 桌面和移动端通过。
 - 发布风险记录清楚。
 
+内容型 SEO 页面还必须满足：
+
+- 页面类型、关键词、搜索意图、读者阶段和内容集群关系明确。
+- 正文有独立信息增益，不是关键词替换或通用 AI 泛文。
+- MDX frontmatter、双语 slug、图片、内链和 CTA 符合当前 Tomako 内容架构。
+- sitemap、canonical、hreflang 和索引状态已确认。
+
 ## 阅读补齐 Gate
 
 交付前检查阅读状态表：
@@ -75,6 +82,11 @@ Skills-OL 变更按脚本提供的 dry-run 或真实写回路径验证。
 - [ ] sitemap 行为符合状态。
 - [ ] 页面关键内容不是纯客户端隐藏内容。
 - [ ] 有 Copy Brief。
+- [ ] 已在对话框输出需求摘要、关键词候选小表和最终 Keyword Evidence Brief。
+- [ ] 若使用 DataForSEO，查询词数量符合低成本规则，并记录查询轮次、查询词和证据来源；若未使用，已说明原因。
+- [ ] 若存在 `docs/seo-keyword-briefs/{slug}.md/.json`，已优先复用；若刷新，已说明刷新原因。
+- [ ] 没有把无密钥 scaffold brief 当作正式关键词证据或最终 Keyword Evidence Brief。
+- [ ] 如果是已有页面文案校准，已列出并修正关键词缺口、用户价值缺口、疑问覆盖缺口和无效模块。
 - [ ] H1、intro、widget、metadata 任务一致。
 - [ ] FAQ、related tools、更新时间或状态按需出现。
 - [ ] 没有 doorway/thin page。
@@ -96,6 +108,32 @@ Skills-OL 变更按脚本提供的 dry-run 或真实写回路径验证。
 - [ ] 每个主要 UI section 都能追溯到一个用户问题、SEO 搜索意图、产品价值或疑问消除目标。
 - [ ] 页面诊断或优化先评估“信息是否完整、价值是否讲清、疑问是否解决”，再评估布局、组件、图片和视觉节奏。
 
+## 内容页专项检查
+
+适用于 Blog / Template / MCP 等 MDX 内容页：
+
+- [ ] 已读取 `p0-content-page-brief.md`、`p0-content-page-structure-gates.md`、`p0-content-page-writing-gates.md` 和 `content-page-implementation.md`。
+- [ ] 页面类型与搜索意图匹配，例如教程、模板、对比、清单、解释、排查、hub 或 cluster。
+- [ ] 已在对话框输出内容页 Brief：目标读者、读者阶段、页面承诺、独立信息增益、集群关系、内链计划和 CTA。
+- [ ] 页面不是薄内容、重复内容、关键词替换页或孤立文章。
+- [ ] H1、title、description、intro、第一屏直接回答同一个搜索问题。
+- [ ] 前 20% 内容给出答案、路线或可用材料，不把核心答案藏到最后。
+- [ ] 每个 H2 对应真实问题、判断、步骤、标准、误区、示例或下一步。
+- [ ] 正文包含具体示例、模板、清单、步骤、判断标准、排查路径或产品化下一步。
+- [ ] 已说明事实来源；数据、竞品、法律/隐私/平台规则等高风险事实没有编造。
+- [ ] 内容说明了 Tomako 的相关工具、模板或工作流价值，而不是只做普通百科文章。
+- [ ] MDX frontmatter 必填字段齐全：`title`、`description`、`category`、`keywords`、`updatedAt`、`readingTime`。
+- [ ] `keywords` 是数组，`updatedAt` 是 `YYYY-MM-DD`。
+- [ ] zh/en slug 默认一致；缺某语言时已记录风险和补齐计划。
+- [ ] 正文不使用 `#`，只使用 `##` / `###`。
+- [ ] 站内链接不带 `/{locale}/` 前缀，锚文本描述目标页价值。
+- [ ] 每篇内容页有合理上游/下游内链和一个明确 Tomako CTA。
+- [ ] 图片放在 `public/` 并能访问；alt 文案自然，不堆关键词。
+- [ ] MDX 中没有 `fetch`、密钥、环境变量、服务端逻辑或复杂交互。
+- [ ] `/blog/generate` 或内部草稿能力保持 noindex，不被当成公开页面。
+- [ ] `pnpm build` 能通过内容加载和 frontmatter 校验。
+- [ ] sitemap、canonical、hreflang、robots/index 是否覆盖该栏目已验证；未覆盖时明确为上线风险。
+
 ## UI 与视觉检查
 
 - [ ] 表单简洁，不像文档或设置面板。
@@ -112,8 +150,12 @@ Skills-OL 变更按脚本提供的 dry-run 或真实写回路径验证。
 - [ ] 工作台标题区只保留真实任务动作或状态，没有无关 badge、chip、SEO 标签或装饰按钮。
 - [ ] 控件来自 `@/components/ui`。
 - [ ] 没有 raw default `<select>` 等控件。
+- [ ] 已评估共享 section / 页面模板库：适合的模块已复用，不适合的模块已自定义，并能说明原因。
 - [ ] 外露配置项不超过 5 个，只保留核心必填或关键字段；其余已折叠或分步。
 - [ ] 复杂表单左侧约束，右侧使用工作台生图物料，下方结果。
+- [ ] 输入框、textarea、select、风格/Type 选择器、横向卡片轨道、右侧视觉和结果区没有越过父容器、压住相邻列或遮挡后续字段。
+- [ ] 页面没有意外横向滚动；如果存在横向选择器，滚动只发生在内部轨道，不能撑破页面。
+- [ ] 大型风格/模板/Type 选择器没有直接铺成超宽卡片墙；超过 3 到 4 个大卡选项时已改成下拉、popover、dialog、折叠或分步。
 - [ ] 页面主体没有被全局窄 `max-width` 收在中间；只有表单、长文本列等必要对象单独限宽。
 - [ ] 结果区、图文模块、视觉 band 和 CTA 使用页面可用宽度，没有跟随表单宽度被压窄。
 - [ ] “你可以得到什么 / 用户价值”模块没有和 Hero 大标题左右对排。
@@ -163,6 +205,11 @@ Skills-OL 变更按脚本提供的 dry-run 或真实写回路径验证。
 - [ ] proxy target 已确认。
 - [ ] Skills-OL 写回地址是规范 HTTPS 地址，没有 `http://` IP、旧域名或依赖 301/302 跳转。
 - [ ] 真实 live QA 已跑通 submit -> writeback -> fetch -> render；不能只用 lint、build、dry-run、schema、mock 或旧 task 代替。
+- [ ] 如果本轮修改了 `Skills-OL/` 中对应功能的 Agent Skill、脚本、prompt、resultType 或 schema，已自动执行 `$deploy-skills-ol` 部署到 cc-connect；不能自动部署时已主动询问用户或标为 blocker。
+- [ ] 长报告或多模块 Agent Tool 已记录至少一次真实 partial 序列，覆盖 submit -> partial writeback -> UI partial render -> final writeback -> UI final render。
+- [ ] 有 partial 时已验证 final 延迟、读取超时或 SSE 抖动不会清空已完成内容，也不会展示整页失败。
+- [ ] partial/final 的 raw Skill Result 已检查，模块顺序、累计快照、`reportStatus` 和 schema 符合契约。
+- [ ] 新增或改名 LLM task service 已检查 `src/services/llm-task/index.ts` barrel export，并运行 `pnpm exec tsc --noEmit --pretty false`。
 - [ ] 若本次改动涉及前端、后端、Skills-OL、cc-connect、schema、resultType 或环境变量，已完成远端部署/重启，或明确证明无需部署。
 - [ ] 如果需要部署但当前无法执行，已标为 blocker，写清缺少的权限/服务器/密钥/发布窗口/负责人和下一步命令；不能宣称页面完成、可测试或可上线。
 - [ ] 后端、gateway、cc-connect、Skills-OL 的目标版本、部署时间、重启状态和验证 taskId 已记录。
@@ -189,6 +236,8 @@ UI-heavy 页面建议用浏览器或 Playwright 看：
 检查内容：
 
 - 无横向滚动。
+- `document.documentElement.scrollWidth` 不大于 `document.documentElement.clientWidth`，除非是明确设计的内部滚动容器。
+- 横向选择器、图片、右侧视觉和表单控件的 bounding box 没有越过父容器或遮挡后续字段。
 - 长中文和英文不溢出。
 - 按钮可点击，焦点可见。
 - 图片不裁坏。
@@ -211,7 +260,9 @@ UI-heavy 页面建议用浏览器或 Playwright 看：
 - slug alias / redirect。
 - review/noindex 逻辑。
 - SSE、轮询、Skill Result 时序。
+- 渐进式 Skill Result 契约，包括 partial/final schema、模块顺序、累计快照和降级状态。
 - 生产 upstream、cc-connect、Skills-OL 版本或重启要求。
+- 本轮是否修改 `Skills-OL/` Agent Skill 或脚本；若修改，必须记录 `$deploy-skills-ol` 部署结果，未部署则记录 blocker。
 - Skills-OL 写回地址、协议或部署环境变量，例如 `SKILL_RESULT_API_URL`。
 - 远端部署动作、部署目标、版本/commit、重启结果和 live QA taskId。
 
