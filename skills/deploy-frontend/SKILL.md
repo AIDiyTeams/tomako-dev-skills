@@ -1,23 +1,30 @@
 ---
 name: deploy-frontend
-description: Deploy Tomako frontend from local multi-repo workspace to production without git push. Use when the user invokes $deploy-frontend, asks for local frontend deploy, hotfix deploy, or wants to ship uncommitted Tomako changes to 168 faster than GitHub Actions.
+description: Fallback local deploy for Tomako frontend from local multi-repo workspace to production without git push. Use when the user invokes $deploy-frontend, asks for emergency local frontend deploy, hotfix deploy, or wants to ship uncommitted Tomako changes to 168 while GitHub Actions image deploy is unavailable.
 ---
 
-# Tomako 前端本地直部署 Skill
+# Tomako 前端本地直部署 Skill（fallback）
 
 本 Skill 位于 `tomako-dev-skills/skills/deploy-frontend/`，默认以本仓库父目录作为工作区；本地目录名不同或不在同一层时，用 `LOCAL_FRONTEND_DIR` 指向前端代码。
 
 触发词：`$deploy-frontend`、本地部署前端、未提交代码部署、热修复前端。
 
-## 何时用这个 Skill
+## 发布策略边界
 
-优先使用本地直部署：
+正式前端发布优先走 `Tomako/.github/workflows/deploy-frontend-image.yml`：
+
+- GitHub Actions 构建 Docker 镜像并推送 GHCR
+- 生产服务器只拉取镜像并重启 Docker Compose `frontend`
+- `/opt/cibos/foldos` 不要求是 git repo，也不再作为常规构建目录
+
+仅在这些场景使用本地直部署：
 
 - 本地 UI/文案/交互改动，想立刻在 `https://tomako.ai` 验证
 - 改动尚未 commit，或不想等 CI + GitHub Actions 队列
 - 只需要替换 frontend，不影响 backend / MySQL / Redis / Nginx
+- GitHub Actions / GHCR / 生产 SSH secrets 临时不可用
 
-仍应走 GitHub Workflow 的场景：
+必须走 GitHub Workflow 的场景：
 
 - 合并到 `main` 后的正式发布
 - 需要团队可见的 CI 审计记录
@@ -36,7 +43,7 @@ description: Deploy Tomako frontend from local multi-repo workspace to productio
 | SSH 密钥 | `TOMAKO_SSH_KEY`（未设置则探测 `github_deploy_key` / `id_ed25519`） |
 | 服务器 | `root@47.239.95.168:22` |
 | 本地代码 | `<workspace>/Tomako` |
-| 远程目录 | `/opt/cibos/foldos` |
+| 远程目录 | `/opt/cibos/foldos`（legacy source fallback） |
 
 ## 常用命令
 
