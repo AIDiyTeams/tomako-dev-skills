@@ -1,0 +1,4 @@
+interface:
+  display_name: "翻译 i18n Skill"
+  short_description: "批量翻译 Tomako 应用 i18n messages（$i18n-translate / $翻译）"
+  default_prompt: "请使用 $i18n-translate，检查目标应用 messages 结构后，用共享翻译脚本断点生成缺失语种。"

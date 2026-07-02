@@ -11,6 +11,7 @@ Tomako 团队工程协作 Skills 与部署脚本。独立仓库：`AIDiyTeams/to
 | pull-all | `$pull-all` | 拉取 workspace 内全部 Tomako 相关仓库最新代码 |
 | push-all | `$push-all` / `$提交` | 提交并推送各仓库本地改动 |
 | deploy-skills-ol | `$deploy-skills-ol` / `$部署skills` | Skills-OL → 124 cc-connect |
+| i18n-translate | `$i18n-translate` / `$翻译` | 批量生成 Tomako-style i18n messages 多语言文案 |
 
 Phase 2 计划：`deploy-backend`、`dev-skills-ol`
 
@@ -31,6 +32,12 @@ export TOMAKO_SSH_KEY=~/.ssh/github_deploy_key
 
 # 5. 部署 Skills-OL 到 cc-connect（需先 push Skills-OL）
 ./tomako-dev-skills/scripts/deploy-skills-ol.sh full
+
+# 6. 批量生成多语言 messages（需 OPENAI_API_KEY；也可用 $i18n-translate）
+OPENAI_API_KEY=... ./tomako-dev-skills/skills/i18n-translate/scripts/translate-messages.sh \
+  --project ./Tomako \
+  --provider=openai \
+  --locale es
 ```
 
 ## 目录结构

@@ -134,6 +134,7 @@ print_trigger_words() {
   printf "  %b\$deploy-skills-ol / \$部署skills%b  %bSkills-OL → cc-connect（124）%b\n" "${trigger}" "${reset}" "${dim}" "${reset}"
   printf "  %b\$pull-all / \$拉取 / \$拉取代码%b   %b拉取全部仓库%b\n" "${trigger}" "${reset}" "${dim}" "${reset}"
   printf "  %b\$push-all / \$提交 / \$提交代码%b   %b提交并推送全部仓库%b\n" "${trigger}" "${reset}" "${dim}" "${reset}"
+  printf "  %b\$i18n-translate / \$翻译%b       %b批量生成多语言 messages%b\n" "${trigger}" "${reset}" "${dim}" "${reset}"
   echo ""
 }
 

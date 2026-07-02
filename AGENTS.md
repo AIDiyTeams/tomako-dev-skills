@@ -27,6 +27,7 @@ tomako-workspace/          ← 工作区根（在此打开 IDE）
 | `$pull-all` / `$拉取` /  `$拉取代码` | pull-all | 拉取 workspace 内全部 Tomako 相关仓库最新代码 |
 | `$push-all` / `$提交` / `$提交代码`| push-all | 提交并推送各仓库本地改动（冲突需人工解决后重试） |
 | `$deploy-skills-ol` / `$部署skills` | deploy-skills-ol | Skills-OL 部署到 124 cc-connect（pull + restart） |
+| `$i18n-translate` / `$翻译` | i18n-translate | 批量生成 Tomako-style `src/i18n/messages` 多语言文案 |
 
 ## 前置条件
 
@@ -42,8 +43,9 @@ export TOMAKO_SSH_KEY=~/.ssh/your_deploy_key   # 团队统一 SSH 密钥
 3. 收到 `$pull-all` / `$拉取` → 读取 `skills/pull-all/SKILL.md`；**cwd 为 tomako-workspace 根目录**，执行 `./tomako-dev-skills/scripts/pull-all.sh pull`（可先 status）；指定仓库时加 `--repo`
 4. 收到 `$push-all` / `$提交` / `$提交代码` → 读取 `skills/push-all/SKILL.md`；**cwd 为 tomako-workspace 根目录**，先 `status` 与 diff，再 `push -m "..."`；指定仓库时加 `--repo`；有冲突则列出文件，解决后重试
 5. 收到 `$deploy-skills-ol` / `$部署skills` → 读取 `skills/deploy-skills-ol/SKILL.md`；确认 Skills-OL 已 push 后执行 `scripts/deploy-skills-ol.sh full`（程序化 SEO 改 Agent skill 后必做）
-6. 默认路径以 `tomako-workspace`（本仓库父目录）为基准；子目录名不同时用 `LOCAL_FRONTEND_DIR`、`LOCAL_BACKEND_DIR`、`LOCAL_SKILLS_OL_DIR` 覆盖；额外仓库纳入默认全量同步时设 `EXTRA_GIT_REPOS="Tomako2 cc-connect"`
-7. 营销/GTM skills 仍在 `Tomako/.agents/skills/`，不在本目录
+6. 收到 `$i18n-translate` / `$翻译` → 读取 `skills/i18n-translate/SKILL.md`；确认目标应用 messages 结构后执行共享翻译脚本，未完整生成前不要开放语言切换
+7. 默认路径以 `tomako-workspace`（本仓库父目录）为基准；子目录名不同时用 `LOCAL_FRONTEND_DIR`、`LOCAL_BACKEND_DIR`、`LOCAL_SKILLS_OL_DIR` 覆盖；额外仓库纳入默认全量同步时设 `EXTRA_GIT_REPOS="Tomako2 cc-connect"`
+8. 营销/GTM skills 仍在 `Tomako/.agents/skills/`，不在本目录
 
 ## Workspace 子项目
 
